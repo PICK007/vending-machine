@@ -13,10 +13,11 @@ app.use(express.static(__dirname));
 // ==================================================
 
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "vending_machine"
+    host: process.env.MYSQLHOST,
+    user: process.env.MYSQLUSER,
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.MYSQLDATABASE,
+    port: Number(process.env.MYSQLPORT)
 });
 
 db.connect((err) => {
