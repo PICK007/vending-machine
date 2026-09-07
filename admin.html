@@ -1,0 +1,901 @@
+
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin - Vending Machine</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #050505;
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           LOGIN
+        ========================= */
+
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 18px;
+            padding: 35px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255, 193, 7, 0.08);
+        }
+
+        .logo {
+            font-size: 45px;
+            margin-bottom: 10px;
+        }
+
+        .login-box h1 {
+            color: #f5b800;
+            margin-bottom: 8px;
+        }
+
+        .login-box p {
+            color: #999;
+            margin-bottom: 25px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            background: #080808;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 10px;
+            font-size: 17px;
+            outline: none;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .password-input:focus {
+            border-color: #f5b800;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #f5b800;
+            color: #000;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-button:hover {
+            background: #ffc928;
+        }
+
+        .login-message {
+            margin-top: 15px;
+            min-height: 22px;
+            color: #ff5555;
+        }
+
+
+        /* =========================
+           ADMIN PANEL
+        ========================= */
+
+        #adminPanel {
+            display: none;
+        }
+
+        header {
+            height: 70px;
+            background: #0b0b0b;
+            border-bottom: 1px solid #292929;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 25px;
+        }
+
+        .header-title {
+            color: #f5b800;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-button {
+            text-decoration: none;
+            border: 1px solid #555;
+            color: white;
+            background: #151515;
+
+            padding: 9px 14px;
+            border-radius: 8px;
+
+            cursor: pointer;
+        }
+
+        .header-button:hover {
+            border-color: #f5b800;
+        }
+
+        .logout-button {
+            border: none;
+            background: #8b1e1e;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background: #b52a2a;
+        }
+
+
+        /* =========================
+           CONTENT
+        ========================= */
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 35px 20px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            color: #f5b800;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            color: #888;
+        }
+
+
+        /* =========================
+           PRODUCTS
+        ========================= */
+
+        .products {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(230px, 1fr));
+
+            gap: 20px;
+        }
+
+        .product-card {
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 15px;
+            padding: 22px;
+        }
+
+        .product-card h2 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .stock {
+            font-size: 18px;
+            color: #f5b800;
+            margin-bottom: 18px;
+        }
+
+        .stock-number {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .stock-buttons {
+            display: grid;
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .stock-button {
+            border: none;
+            border-radius: 8px;
+
+            padding: 12px 5px;
+
+            background: #f5b800;
+            color: #000;
+
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .stock-button:hover {
+            background: #ffd34d;
+        }
+
+
+        .custom-area {
+            display: flex;
+            gap: 8px;
+        }
+
+        .custom-input {
+            width: 100%;
+            min-width: 0;
+
+            background: #080808;
+            border: 1px solid #444;
+            color: white;
+
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .custom-button {
+            white-space: nowrap;
+
+            background: #222;
+            color: white;
+
+            border: 1px solid #555;
+            border-radius: 8px;
+
+            padding: 0 15px;
+
+            cursor: pointer;
+        }
+
+        .custom-button:hover {
+            border-color: #f5b800;
+        }
+
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+            text-align: center;
+            margin-top: 25px;
+
+            min-height: 25px;
+
+            color: #f5b800;
+        }
+
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 0 12px;
+            }
+
+            .header-title {
+                font-size: 17px;
+            }
+
+            .header-button {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==================================================
+     LOGIN PAGE
+================================================== -->
+
+<div id="loginPage" class="login-page">
+
+    <div class="login-box">
+
+        <div class="logo">
+            ⚙️
+        </div>
+
+        <h1>ADMIN LOGIN</h1>
+
+        <p>
+            กรุณาใส่รหัสผ่านเพื่อจัดการระบบ
+        </p>
+
+        <input
+            id="password"
+            class="password-input"
+            type="password"
+            placeholder="รหัสผ่าน Admin"
+            autocomplete="off"
+        >
+
+        <button
+            class="login-button"
+            onclick="login()"
+        >
+            เข้าสู่ระบบ
+        </button>
+
+        <div
+            id="loginMessage"
+            class="login-message"
+        ></div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ==================================================
+     ADMIN PANEL
+================================================== -->
+
+<div id="adminPanel">
+
+    <header>
+
+        <div class="header-title">
+            ⚙️ ADMIN PANEL
+        </div>
+
+        <div class="header-buttons">
+
+            <a
+                href="/"
+                class="header-button"
+            >
+                🏠 หน้าร้าน
+            </a>
+
+            <button
+                class="logout-button"
+                onclick="logout()"
+            >
+                ออกจากระบบ
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        <div class="hero">
+
+            <h1>
+                STOCK MANAGEMENT
+            </h1>
+
+            <p>
+                จัดการจำนวนสินค้าภายในตู้
+            </p>
+
+        </div>
+
+
+        <div
+            id="products"
+            class="products"
+        ></div>
+
+
+        <div
+            id="status"
+            class="status"
+        ></div>
+
+    </main>
+
+</div>
+
+
+
+<script>
+
+// ==================================================
+// ADMIN TOKEN
+// ==================================================
+
+let adminToken = null;
+
+// ==================================================
+// LOGIN
+// ==================================================
+
+async function login() {
+
+    const password =
+        document.getElementById("password").value;
+
+    const message =
+        document.getElementById("loginMessage");
+
+
+    if (!password) {
+
+        message.textContent =
+            "กรุณาใส่รหัสผ่าน";
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch("/admin/login", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    password: password
+                })
+
+            });
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            message.textContent =
+                data.message ||
+                "รหัสผ่านไม่ถูกต้อง";
+
+            return;
+        }
+
+
+        // เก็บ Token
+        adminToken = data.token;
+
+        
+
+
+        // แสดง Admin Panel
+        showAdminPanel();
+
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        message.textContent =
+            "เชื่อมต่อ Server ไม่ได้";
+
+    }
+
+}
+
+
+// ==================================================
+// แสดง ADMIN PANEL
+// ==================================================
+
+function showAdminPanel() {
+
+    document.getElementById(
+        "loginPage"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "adminPanel"
+    ).style.display = "block";
+
+
+    loadProducts();
+
+}
+
+
+// ==================================================
+// ตรวจ Token ตอนเปิดหน้า
+// ==================================================
+
+
+
+// ==================================================
+// โหลดสินค้า
+// ==================================================
+
+async function loadProducts() {
+
+    try {
+
+        const response =
+            await fetch("/products");
+
+        const products =
+            await response.json();
+
+
+        const container =
+            document.getElementById("products");
+
+
+        container.innerHTML = "";
+
+
+        products.forEach(product => {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "product-card";
+
+
+            card.innerHTML = `
+
+                <h2>
+                    ${product.name}
+                </h2>
+
+                <div class="stock">
+
+                    Stock
+
+                    <div class="stock-number">
+
+                        ${product.stock}
+
+                    </div>
+
+                </div>
+
+
+                <div class="stock-buttons">
+
+                    <button
+                        class="stock-button"
+                        onclick="addStock(${product.id}, 1)"
+                    >
+                        +1
+                    </button>
+
+                    <button
+                        class="stock-button"
+                        onclick="addStock(${product.id}, 5)"
+                    >
+                        +5
+                    </button>
+
+                    <button
+                        class="stock-button"
+                        onclick="addStock(${product.id}, 10)"
+                    >
+                        +10
+                    </button>
+
+                </div>
+
+
+                <div class="custom-area">
+
+                    <input
+                        id="custom-${product.id}"
+                        class="custom-input"
+                        type="number"
+                        min="1"
+                        placeholder="จำนวน"
+                    >
+
+                    <button
+                        class="custom-button"
+                        onclick="addCustomStock(${product.id})"
+                    >
+                        เพิ่ม
+                    </button>
+
+                </div>
+
+            `;
+
+
+            container.appendChild(card);
+
+        });
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "status"
+        ).textContent =
+            "โหลดสินค้าไม่สำเร็จ";
+
+    }
+
+}
+
+
+// ==================================================
+// เพิ่ม Stock
+// ==================================================
+
+async function addStock(id, amount) {
+
+    if (!adminToken) {
+
+        alert("กรุณา Login Admin ก่อน");
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/stock/${id}/add`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "x-admin-token":
+                            adminToken
+
+                    },
+
+                    body: JSON.stringify({
+                        amount: amount
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        // Token หมดอายุ / ไม่มีสิทธิ์
+        if (response.status === 401) {
+
+            alert(
+                "ไม่มีสิทธิ์ หรือ Session หมดอายุ"
+            );
+
+            logout();
+
+            return;
+
+        }
+
+
+        if (!data.success) {
+
+            alert(data.message);
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "status"
+        ).textContent =
+            `เพิ่ม Stock +${amount} สำเร็จ`;
+
+
+        loadProducts();
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "เชื่อมต่อ Server ไม่ได้"
+        );
+
+    }
+
+}
+
+
+// ==================================================
+// เพิ่ม Stock แบบกำหนดเอง
+// ==================================================
+
+function addCustomStock(id) {
+
+    const input =
+        document.getElementById(
+            `custom-${id}`
+        );
+
+
+    const amount =
+        Number(input.value);
+
+
+    if (!amount || amount <= 0) {
+
+        alert(
+            "กรุณาใส่จำนวน Stock"
+        );
+
+        return;
+
+    }
+
+
+    addStock(id, amount);
+
+
+    input.value = "";
+
+}
+
+
+// ==================================================
+// LOGOUT
+// ==================================================
+
+async function logout() {
+
+    if (adminToken) {
+
+        try {
+
+            await fetch(
+                "/admin/logout",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "x-admin-token":
+                            adminToken
+
+                    }
+
+                }
+            );
+
+        }
+        catch (error) {
+
+            console.log(error);
+
+        }
+
+    }
+
+
+    adminToken = null;
+
+   
+
+
+    document.getElementById(
+        "adminPanel"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "loginPage"
+    ).style.display = "flex";
+
+
+    document.getElementById(
+        "password"
+    ).value = "";
+
+}
+
+
+// ==================================================
+// กด Enter เพื่อ Login
+// ==================================================
+
+document.getElementById(
+    "password"
+).addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Enter") {
+
+            login();
+
+        }
+
+    }
+);
+
+
+// ==================================================
+// อัปเดต Stock อัตโนมัติ
+// ==================================================
+
+setInterval(() => {
+
+    if (adminToken) {
+
+        loadProducts();
+
+    }
+
+}, 2000);
+
+</script>
+
+
+</body>
+
+</html>
+```

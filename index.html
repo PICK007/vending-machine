@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>VENDING MACHINE</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background: #080808;
+        color: white;
+        min-height: 100vh;
+    }
+
+    header {
+        background: #0d0d0d;
+        border-bottom: 2px solid #f5c400;
+        padding: 20px 8%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        color: #f5c400;
+        font-size: 26px;
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
+
+    .status {
+        color: #aaa;
+        font-size: 14px;
+    }
+
+    .status span {
+        color: #00ff66;
+        font-weight: bold;
+    }
+
+    .hero {
+        text-align: center;
+        padding: 55px 20px 35px;
+    }
+
+    .hero h1 {
+        font-size: 42px;
+        color: #f5c400;
+        letter-spacing: 3px;
+    }
+
+    .hero p {
+        color: #999;
+        margin-top: 10px;
+        font-size: 16px;
+    }
+
+    .top-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin: 20px auto 35px;
+        flex-wrap: wrap;
+    }
+
+    .main-button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        background: #f5c400;
+        color: #111;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .main-button:hover {
+        opacity: 0.85;
+    }
+
+    .admin-button {
+        background: #222;
+        color: #f5c400;
+        border: 1px solid #f5c400;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 1100px;
+        margin: auto;
+        padding-bottom: 50px;
+    }
+
+    .section-title {
+        margin-bottom: 25px;
+    }
+
+    .section-title h2 {
+        font-size: 24px;
+    }
+
+    .section-title .line {
+        height: 3px;
+        width: 60px;
+        background: #f5c400;
+        margin-top: 8px;
+    }
+
+    #products {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 22px;
+    }
+
+    .product-card {
+        background: #111;
+        border: 1px solid #292929;
+        border-radius: 14px;
+        padding: 25px;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        border-color: #f5c400;
+        box-shadow: 0 8px 30px rgba(245, 196, 0, 0.15);
+    }
+
+    .product-icon {
+        width: 65px;
+        height: 65px;
+        background: #f5c400;
+        color: #111;
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    .product-card h3 {
+        font-size: 21px;
+        margin-bottom: 12px;
+    }
+
+    .price {
+        color: #f5c400;
+        font-size: 25px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .stock {
+        color: #aaa;
+        font-size: 14px;
+    }
+
+    .stock strong {
+        color: white;
+    }
+
+    .available {
+        color: #00ff66 !important;
+    }
+
+    .low-stock {
+        color: #ff9900 !important;
+    }
+
+    .out-stock {
+        color: #ff3333 !important;
+    }
+
+    .buy-button {
+        margin-top: 15px;
+        width: 100%;
+        padding: 12px;
+        background: #f5c400;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 15px;
+    }
+
+    .buy-button:hover {
+        opacity: 0.85;
+    }
+
+    .buy-button:disabled {
+        background: #333;
+        color: #777;
+        cursor: not-allowed;
+    }
+
+
+    /* ================= PURCHASE HISTORY ================= */
+
+    .purchase-section {
+        margin-top: 50px;
+    }
+
+    .purchase-history {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .purchase-item {
+        background: #111;
+        border: 1px solid #292929;
+        border-radius: 10px;
+        padding: 15px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .purchase-name {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .purchase-date {
+        color: #777;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .purchase-price {
+        color: #ff5555;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .empty-history {
+        background: #111;
+        border: 1px solid #222;
+        border-radius: 10px;
+        text-align: center;
+        color: #777;
+        padding: 25px;
+    }
+
+
+    /* ================= MODAL ================= */
+
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.80);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    .modal-box {
+        width: 100%;
+        max-width: 430px;
+        background: #111;
+        border: 1px solid #f5c400;
+        border-radius: 14px;
+        padding: 25px;
+        text-align: center;
+    }
+
+    .modal-box h2 {
+        color: #f5c400;
+        margin-bottom: 20px;
+    }
+
+    .modal-box input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #333;
+        background: #080808;
+        color: white;
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+
+    .money-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .money-buttons button {
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: #f5c400;
+        color: #111;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close-button {
+        margin-top: 15px;
+        width: 100%;
+        padding: 10px;
+        background: #222;
+        color: white;
+        border: 1px solid #444;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+
+    /* ================= PAYMENT ================= */
+
+    .payment-box {
+        display: none;
+    }
+
+    .payment-status {
+        background: #080808;
+        border: 1px solid #292929;
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 15px;
+    }
+
+    .payment-status .label {
+        color: #999;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .transaction-id {
+        color: #f5c400;
+        font-size: 14px;
+        word-break: break-all;
+    }
+
+    .payment-amount {
+        font-size: 30px;
+        color: #f5c400;
+        font-weight: bold;
+        margin: 15px 0;
+    }
+
+    .pending {
+        color: #ff9900;
+        font-weight: bold;
+    }
+
+    .success {
+        color: #00ff66;
+        font-weight: bold;
+    }
+
+    .simulate-button {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        background: #00c853;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .simulate-button:hover {
+        opacity: 0.85;
+    }
+
+    .simulate-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+
+    /* ================= TOPUP HISTORY ================= */
+
+    .history {
+        margin-top: 20px;
+        text-align: left;
+        border-top: 1px solid #292929;
+        padding-top: 15px;
+    }
+
+    .history h3 {
+        color: #f5c400;
+        margin-bottom: 12px;
+    }
+
+    .history-item {
+        background: #080808;
+        border: 1px solid #222;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 8px;
+        font-size: 13px;
+    }
+
+    .history-item .amount {
+        color: #f5c400;
+        font-weight: bold;
+    }
+
+    .history-item .date {
+        color: #777;
+        margin-top: 4px;
+    }
+
+
+    /* ================= FOOTER ================= */
+
+    footer {
+        border-top: 1px solid #222;
+        text-align: center;
+        padding: 25px;
+        color: #666;
+        font-size: 13px;
+    }
+
+    .loading {
+        text-align: center;
+        color: #999;
+        padding: 50px;
+        grid-column: 1 / -1;
+    }
+
+
+    /* ================= MOBILE ================= */
+
+    @media (max-width: 600px) {
+
+        header {
+            padding: 18px 5%;
+        }
+
+        .logo {
+            font-size: 20px;
+        }
+
+        .hero h1 {
+            font-size: 30px;
+        }
+
+        .hero {
+            padding-top: 40px;
+        }
+
+        .purchase-item {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .purchase-price {
+            font-size: 14px;
+        }
+
+    }
+
+</style>
+
+
+</head>
+
+<body>
+
+
+<!-- ================= HEADER ================= -->
+
+<header>
+
+    <div class="logo">
+        VENDING MACHINE
+    </div>
+
+    <div class="status">
+
+        💰 Wallet:
+
+        <span id="wallet">
+            กำลังโหลด...
+        </span>
+
+    </div>
+
+</header>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <h1>
+        PRODUCTS
+    </h1>
+
+    <p>
+        ตรวจสอบสินค้าและจำนวนสินค้าที่มีอยู่ในตู้
+    </p>
+
+</section>
+
+
+<!-- ================= BUTTONS ================= -->
+
+<div class="top-buttons">
+
+    <button
+        class="main-button"
+        onclick="openTopup()"
+    >
+        💰 เติมเงิน
+    </button>
+
+
+    <a
+        href="/admin.html"
+        class="main-button admin-button"
+    >
+        ⚙️ จัดการระบบ
+    </a>
+
+</div>
+
+
+<!-- ================= PRODUCTS ================= -->
+
+<main class="container">
+
+    <div class="section-title">
+
+        <h2>
+            สินค้าทั้งหมด
+        </h2>
+
+        <div class="line"></div>
+
+    </div>
+
+
+    <div id="products">
+
+        <div class="loading">
+            กำลังโหลดสินค้า...
+        </div>
+
+    </div>
+
+
+    <!-- ================= PURCHASE HISTORY ================= -->
+
+    <section class="purchase-section">
+
+        <div class="section-title">
+
+            <h2>
+                🧾 ประวัติการซื้อ
+            </h2>
+
+            <div class="line"></div>
+
+        </div>
+
+
+        <div
+            id="purchaseHistory"
+            class="purchase-history"
+        >
+
+            <div class="loading">
+                กำลังโหลดประวัติการซื้อ...
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ================= TOPUP MODAL ================= -->
+
+<div
+    id="topupModal"
+    class="modal"
+>
+
+    <div class="modal-box">
+
+        <!-- เลือกจำนวนเงิน -->
+
+        <div id="topupSelect">
+
+            <h2>
+                💰 เติมเงิน Wallet
+            </h2>
+
+            <p style="color:#888; margin-bottom:20px;">
+                เลือกจำนวนเงินที่ต้องการเติม
+            </p>
+
+
+            <input
+                type="number"
+                id="topupAmount"
+                placeholder="จำนวนเงิน"
+                min="1"
+                step="1"
+            >
+
+
+            <div class="money-buttons">
+
+                <button onclick="createTopup(10)">
+                    +10 บาท
+                </button>
+
+                <button onclick="createTopup(20)">
+                    +20 บาท
+                </button>
+
+                <button onclick="createTopup(50)">
+                    +50 บาท
+                </button>
+
+                <button onclick="createTopup(100)">
+                    +100 บาท
+                </button>
+
+            </div>
+
+
+            <button
+                class="main-button"
+                style="width:100%; margin-top:10px;"
+                onclick="createCustomTopup()"
+            >
+                เติมจำนวนที่กำหนด
+            </button>
+
+
+            <button
+                class="close-button"
+                onclick="closeTopup()"
+            >
+                ปิด
+            </button>
+
+        </div>
+
+
+        <!-- รายการชำระเงิน -->
+
+        <div
+            id="paymentBox"
+            class="payment-box"
+        >
+
+            <h2>
+                💳 จำลองการชำระเงิน
+            </h2>
+
+
+            <div class="payment-status">
+
+                <div class="label">
+                    หมายเลขรายการ
+                </div>
+
+                <div
+                    id="transactionId"
+                    class="transaction-id"
+                >
+                    -
+                </div>
+
+
+                <div class="label" style="margin-top:15px;">
+                    จำนวนเงิน
+                </div>
+
+                <div
+                    id="paymentAmount"
+                    class="payment-amount"
+                >
+                    0 บาท
+                </div>
+
+
+                <div
+                    id="paymentStatus"
+                    class="pending"
+                >
+                    ⏳ รอชำระเงิน
+                </div>
+
+            </div>
+
+
+            <button
+                id="simulateButton"
+                class="simulate-button"
+                onclick="simulatePayment()"
+            >
+                ✓ จำลองการชำระเงิน
+            </button>
+
+
+            <button
+                class="close-button"
+                onclick="closeTopup()"
+            >
+                ยกเลิก
+            </button>
+
+        </div>
+
+
+        <!-- ประวัติเติมเงิน -->
+
+        <div class="history">
+
+            <h3>
+                📜 ประวัติเติมเงิน
+            </h3>
+
+            <div id="topupHistory">
+                กำลังโหลด...
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    VENDING MACHINE © 2026
+
+</footer>
+
+
+<script>
+
+
+    // ==================================================
+    // GLOBAL
+    // ==================================================
+
+    let currentTransactionId = null;
+
+
+    // ==================================================
+    // ซื้อสินค้า
+    // ==================================================
+
+    function buyProduct(id) {
+
+        fetch("/buy/" + id, {
+
+            method: "POST"
+
+        })
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            if (data.success) {
+
+                alert(
+
+                    "ซื้อสินค้าสำเร็จ\n\n" +
+
+                    "สินค้า: " +
+                    data.productName +
+                    "\n" +
+
+                    "ราคา: " +
+                    data.price +
+                    " บาท\n" +
+
+                    "Wallet เหลือ: " +
+                    data.balance +
+                    " บาท"
+
+                );
+
+                loadProducts();
+
+                loadWallet();
+
+                loadPurchaseHistory();
+
+            }
+
+            else {
+
+                alert(data.message);
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.log(error);
+
+            alert(
+                "ไม่สามารถเชื่อมต่อ Server ได้"
+            );
+
+        });
+
+    }
+
+
+    // ==================================================
+    // โหลด Wallet
+    // ==================================================
+
+    function loadWallet() {
+
+        fetch("/wallet/PICKK")
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "โหลด Wallet ไม่สำเร็จ"
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(data => {
+
+            document.getElementById("wallet").innerText =
+                data.balance + " บาท";
+
+        })
+
+        .catch(error => {
+
+            console.log(
+                "โหลด Wallet ไม่ได้:",
+                error
+            );
+
+        });
+
+    }
+
+
+    // ==================================================
+    // เปิดเติมเงิน
+    // ==================================================
+
+    function openTopup() {
+
+        document.getElementById(
+            "topupModal"
+        ).style.display = "flex";
+
+
+        document.getElementById(
+            "topupSelect"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "paymentBox"
+        ).style.display = "none";
+
+
+        loadTopupHistory();
+
+    }
+
+
+    // ==================================================
+    // ปิดเติมเงิน
+    // ==================================================
+
+    function closeTopup() {
+
+        document.getElementById(
+            "topupModal"
+        ).style.display = "none";
+
+        currentTransactionId = null;
+
+    }
+
+
+    // ==================================================
+    // สร้างรายการเติมเงิน
+    // ==================================================
+
+    function createTopup(amount) {
+
+        createTopupRequest(amount);
+
+    }
+
+
+    // ==================================================
+    // สร้างรายการแบบกำหนดเอง
+    // ==================================================
+
+    function createCustomTopup() {
+
+        const amount =
+            Number(
+                document.getElementById(
+                    "topupAmount"
+                ).value
+            );
+
+
+        if (!Number.isInteger(amount) || amount <= 0) {
+
+            alert(
+                "กรุณาใส่จำนวนเงินเป็นจำนวนเต็มมากกว่า 0"
+            );
+
+            return;
+
+        }
+
+
+        createTopupRequest(amount);
+
+    }
+
+
+    // ==================================================
+    // REQUEST CREATE TOPUP
+    // ==================================================
+
+    function createTopupRequest(amount) {
+
+        fetch(
+            "/wallet/topup/create",
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    amount: amount
+
+                })
+
+            }
+        )
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            if (!data.success) {
+
+                alert(data.message);
+
+                return;
+
+            }
+
+
+            currentTransactionId =
+                data.transactionId;
+
+
+            document.getElementById(
+                "transactionId"
+            ).innerText =
+                data.transactionId;
+
+
+            document.getElementById(
+                "paymentAmount"
+            ).innerText =
+                data.amount + " บาท";
+
+
+            document.getElementById(
+                "paymentStatus"
+            ).innerHTML =
+                "⏳ รอชำระเงิน";
+
+
+            document.getElementById(
+                "paymentStatus"
+            ).className =
+                "pending";
+
+
+            document.getElementById(
+                "simulateButton"
+            ).disabled = false;
+
+
+            document.getElementById(
+                "simulateButton"
+            ).innerText =
+                "✓ จำลองการชำระเงิน";
+
+
+            document.getElementById(
+                "topupSelect"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "paymentBox"
+            ).style.display =
+                "block";
+
+        })
+
+        .catch(error => {
+
+            console.log(error);
+
+            alert(
+                "สร้างรายการเติมเงินไม่สำเร็จ"
+            );
+
+        });
+
+    }
+
+
+    // ==================================================
+    // จำลองการชำระเงิน
+    // ==================================================
+
+    function simulatePayment() {
+
+        if (!currentTransactionId) {
+
+            alert(
+                "ไม่พบรายการเติมเงิน"
+            );
+
+            return;
+
+        }
+
+
+        const button =
+            document.getElementById(
+                "simulateButton"
+            );
+
+
+        button.disabled = true;
+
+        button.innerText =
+            "กำลังตรวจสอบ...";
+
+
+        fetch(
+            "/wallet/topup/pay-simulate/" +
+            currentTransactionId,
+            {
+
+                method: "POST"
+
+            }
+        )
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            if (!data.success) {
+
+                button.disabled = false;
+
+                button.innerText =
+                    "✓ จำลองการชำระเงิน";
+
+                alert(data.message);
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "paymentStatus"
+            ).innerHTML =
+                "✓ ชำระเงินสำเร็จ";
+
+
+            document.getElementById(
+                "paymentStatus"
+            ).className =
+                "success";
+
+
+            button.innerText =
+                "ชำระเงินสำเร็จ";
+
+
+            loadWallet();
+
+            loadTopupHistory();
+
+
+            setTimeout(() => {
+
+                alert(
+
+                    "เติมเงินสำเร็จ!\n\n" +
+
+                    "รายการ: " +
+                    data.transactionId +
+                    "\n" +
+
+                    "จำนวน: +" +
+                    data.amount +
+                    " บาท\n\n" +
+
+                    "Wallet: " +
+                    data.balance +
+                    " บาท"
+
+                );
+
+            }, 100);
+
+        })
+
+        .catch(error => {
+
+            console.log(error);
+
+            button.disabled = false;
+
+            button.innerText =
+                "✓ จำลองการชำระเงิน";
+
+
+            alert(
+                "ไม่สามารถเชื่อมต่อ Server ได้"
+            );
+
+        });
+
+    }
+
+
+    // ==================================================
+    // ประวัติเติมเงิน
+    // ==================================================
+
+    function loadTopupHistory() {
+
+        fetch(
+            "/wallet/topup/history/PICKK"
+        )
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            const box =
+                document.getElementById(
+                    "topupHistory"
+                );
+
+
+            if (
+                !data.success ||
+                !Array.isArray(data.history) ||
+                data.history.length === 0
+            ) {
+
+                box.innerHTML =
+                    `<div style="color:#777;">
+                        ยังไม่มีประวัติ
+                    </div>`;
+
+                return;
+
+            }
+
+
+            box.innerHTML = "";
+
+
+            data.history.forEach(item => {
+
+                let statusText =
+                    "รอชำระเงิน";
+
+                let statusClass =
+                    "pending";
+
+
+                if (
+                    item.status === "SUCCESS"
+                ) {
+
+                    statusText =
+                        "สำเร็จ";
+
+                    statusClass =
+                        "success";
+
+                }
+
+                else if (
+                    item.status === "CANCELLED"
+                ) {
+
+                    statusText =
+                        "ยกเลิก";
+
+                }
+
+
+                const date =
+                    item.created_at
+                        ? new Date(
+                            item.created_at
+                        ).toLocaleString(
+                            "th-TH"
+                        )
+                        : "-";
+
+
+                box.innerHTML += `
+
+                    <div class="history-item">
+
+                        <div>
+
+                            <span class="amount">
+                                +${item.amount} บาท
+                            </span>
+
+                            &nbsp;
+
+                            <span class="${statusClass}">
+                                ${statusText}
+                            </span>
+
+                        </div>
+
+                        <div style="color:#888;">
+                            ${item.transaction_id}
+                        </div>
+
+                        <div class="date">
+                            ${date}
+                        </div>
+
+                    </div>
+
+                `;
+
+            });
+
+        })
+
+        .catch(error => {
+
+            console.log(
+                "โหลดประวัติเติมเงินไม่ได้:",
+                error
+            );
+
+        });
+
+    }
+
+
+    // ==================================================
+    // ประวัติการซื้อสินค้า
+    // ==================================================
+
+    function loadPurchaseHistory() {
+
+        fetch(
+            "/purchase/history/PICKK"
+        )
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "โหลดประวัติการซื้อไม่สำเร็จ"
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(data => {
+
+            const box =
+                document.getElementById(
+                    "purchaseHistory"
+                );
+
+
+            if (
+                !data.success ||
+                !Array.isArray(data.history) ||
+                data.history.length === 0
+            ) {
+
+                box.innerHTML = `
+
+                    <div class="empty-history">
+
+                        🛒 ยังไม่มีประวัติการซื้อสินค้า
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            box.innerHTML = "";
+
+
+            data.history.forEach(item => {
+
+                const date =
+                    item.created_at
+                        ? new Date(
+                            item.created_at
+                        ).toLocaleString(
+                            "th-TH"
+                        )
+                        : "-";
+
+
+                box.innerHTML += `
+
+                    <div class="purchase-item">
+
+                        <div>
+
+                            <div class="purchase-name">
+
+                                🛒 ${item.product_name}
+
+                            </div>
+
+                            <div class="purchase-date">
+
+                                ${date}
+
+                            </div>
+
+                        </div>
+
+                        <div class="purchase-price">
+
+                            -${Number(item.price).toFixed(2)} บาท
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            });
+
+        })
+
+        .catch(error => {
+
+            console.log(
+                "โหลดประวัติการซื้อไม่ได้:",
+                error
+            );
+
+        });
+
+    }
+
+
+    // ==================================================
+    // โหลดสินค้า
+    // ==================================================
+
+    function loadProducts() {
+
+        fetch("/products")
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Server Error"
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(products => {
+
+            const box =
+                document.getElementById(
+                    "products"
+                );
+
+            box.innerHTML = "";
+
+
+            products.forEach(product => {
+
+                let icon = "📦";
+
+
+                if (
+                    product.name.includes("น้ำ")
+                ) {
+
+                    icon = "💧";
+
+                }
+
+                else if (
+                    product.name.includes("โค้ก")
+                ) {
+
+                    icon = "🥤";
+
+                }
+
+                else if (
+                    product.name.includes("เลย์")
+                ) {
+
+                    icon = "🍟";
+
+                }
+
+
+                let stockClass =
+                    "available";
+
+                let stockText =
+                    "มีสินค้า";
+
+
+                if (product.stock <= 0) {
+
+                    stockClass =
+                        "out-stock";
+
+                    stockText =
+                        "สินค้าหมด";
+
+                }
+
+                else if (product.stock <= 3) {
+
+                    stockClass =
+                        "low-stock";
+
+                    stockText =
+                        "สินค้าใกล้หมด";
+
+                }
+
+
+                box.innerHTML += `
+
+                    <div class="product-card">
+
+                        <div class="product-icon">
+                            ${icon}
+                        </div>
+
+                        <h3>
+                            ${product.name}
+                        </h3>
+
+                        <div class="price">
+                            ${product.price} บาท
+                        </div>
+
+                        <div class="stock">
+
+                            คงเหลือ:
+
+                            <strong>
+                                ${product.stock} ชิ้น
+                            </strong>
+
+                        </div>
+
+                        <div
+                            class="${stockClass}"
+                            style="margin-top:10px;"
+                        >
+
+                            ${stockText}
+
+                        </div>
+
+
+                        <button
+                            class="buy-button"
+                            onclick="buyProduct(${product.id})"
+                            ${product.stock <= 0 ? "disabled" : ""}
+                        >
+
+                            ซื้อสินค้า
+
+                        </button>
+
+                    </div>
+
+                `;
+
+            });
+
+
+            if (products.length === 0) {
+
+                box.innerHTML = `
+
+                    <div class="loading">
+
+                        ยังไม่มีสินค้าในระบบ
+
+                    </div>
+
+                `;
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.log(
+                "โหลดสินค้าไม่ได้:",
+                error
+            );
+
+        });
+
+    }
+
+
+    // ==================================================
+    // เริ่มระบบ
+    // ==================================================
+
+    loadProducts();
+
+    loadWallet();
+
+    loadPurchaseHistory();
+
+
+    // สินค้าและ Wallet อัปเดตเร็ว
+
+    setInterval(
+        loadProducts,
+        1000
+    );
+
+
+    setInterval(
+        loadWallet,
+        1000
+    );
+
+
+    // ประวัติการซื้ออัปเดตทุก 3 วินาที
+
+    setInterval(
+        loadPurchaseHistory,
+        3000
+    );
+
+</script>
+
+
+</body>
+
+</html>
