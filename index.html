@@ -6,8 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-<title>VENDING MACHINE</title>
+    <title>VENDING MACHINE</title>
 
 <style>
 
@@ -220,6 +219,15 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
+
+        /* จำกัดความสูง */
+        max-height: 300px;
+
+        /* เปิด Scroll */
+        overflow-y: auto;
+
+        /* กัน Scrollbar ชิดกล่อง */
+        padding-right: 8px;
     }
 
     .purchase-item {
@@ -231,6 +239,7 @@
         justify-content: space-between;
         align-items: center;
         gap: 15px;
+        flex-shrink: 0;
     }
 
     .purchase-name {
@@ -268,7 +277,7 @@
         inset: 0;
         background: rgba(0, 0, 0, 0.80);
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
         z-index: 1000;
         padding: 20px;
         overflow-y: auto;
@@ -282,6 +291,11 @@
         border-radius: 14px;
         padding: 25px;
         text-align: center;
+
+        /* ไม่ให้ Modal ยาวเกินหน้าจอ */
+        max-height: 90vh;
+        overflow-y: auto;
+        margin: 20px auto;
     }
 
     .modal-box h2 {
@@ -400,6 +414,15 @@
         text-align: left;
         border-top: 1px solid #292929;
         padding-top: 15px;
+
+        /* จำกัดความสูง */
+        max-height: 300px;
+
+        /* เปิด Scroll */
+        overflow-y: auto;
+
+        /* กัน Scrollbar ชิดขอบ */
+        padding-right: 8px;
     }
 
     .history h3 {
@@ -424,6 +447,28 @@
     .history-item .date {
         color: #777;
         margin-top: 4px;
+    }
+
+
+    /* ================= SCROLLBAR ================= */
+
+    .purchase-history::-webkit-scrollbar,
+    .history::-webkit-scrollbar,
+    .modal-box::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .purchase-history::-webkit-scrollbar-thumb,
+    .history::-webkit-scrollbar-thumb,
+    .modal-box::-webkit-scrollbar-thumb {
+        background: #f5c400;
+        border-radius: 10px;
+    }
+
+    .purchase-history::-webkit-scrollbar-track,
+    .history::-webkit-scrollbar-track,
+    .modal-box::-webkit-scrollbar-track {
+        background: #111;
     }
 
 
@@ -477,7 +522,6 @@
     }
 
 </style>
-
 
 </head>
 
@@ -1450,7 +1494,6 @@ if (checkLogin()) {
 }
 
 </script>
-
 
 </body>
 
