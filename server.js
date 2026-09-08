@@ -642,10 +642,9 @@ app.post("/buy/:id", requireUser, (req, res) => {
           );
 
           // ==================================================
-          // สำคัญ:
-          // ตอนนี้ยังไม่หักเงิน
+          // ยังไม่หักเงิน
           // ยังไม่ลด Stock
-          // ยังไม่บันทึก purchase_history
+          // ยังไม่บันทึกประวัติ
           // ==================================================
 
           res.json({
@@ -777,7 +776,6 @@ app.post("/dispense-result", (req, res) => {
 
   if (success) {
 
-    // กันส่ง SUCCESS ซ้ำ
     if (order.status === "SUCCESS") {
 
       return res.json({
@@ -797,7 +795,7 @@ app.post("/dispense-result", (req, res) => {
       }
 
       // ==================================================
-      // ตรวจ Stock + Wallet อีกครั้ง
+      // CHECK STOCK
       // ==================================================
 
       db.query(
@@ -843,6 +841,10 @@ app.post("/dispense-result", (req, res) => {
 
             });
           }
+
+          // ==================================================
+          // CHECK WALLET
+          // ==================================================
 
           db.query(
             `SELECT balance
@@ -983,6 +985,10 @@ app.post("/dispense-result", (req, res) => {
                             });
                           }
 
+                          // ==================================================
+                          // COMMIT
+                          // ==================================================
+
                           db.commit((err) => {
 
                             if (err) {
@@ -1013,10 +1019,6 @@ app.post("/dispense-result", (req, res) => {
                               "DISPENSE SUCCESS:",
                               orderId
                             );
-
-                            // ==================================================
-                            // ลบ Queue Order
-                            // ==================================================
 
                             setTimeout(() => {
 
@@ -1075,11 +1077,8 @@ app.post("/dispense-result", (req, res) => {
     order
   );
 
-  // ==================================================
-  // ไม่มีการหักเงิน
-  // ไม่มีการลด Stock
-  // เพราะเรายังไม่ได้หักตั้งแต่ตอนซื้อ
-  // ==================================================
+  // ไม่หักเงิน
+  // ไม่ลด Stock
 
   setTimeout(() => {
 
@@ -1719,16 +1718,55 @@ app.get(
 
         if (err) {
 
+          console.error(err);
+
           return res.status(500).json({
             success: false,
             message: "Database Error"
           });
         }
 
-        res.json({
-          success: true,
-          purchases: rows
-        });
+        // สำคัญ:
+        // admin.html ของเรารับเป็น Array
+        res.json(rows);
+
+      }
+    );
+
+  }
+);
+
+// ==================================================
+// ADMIN USERS
+// ==================================================
+
+app.get(
+  "/admin/users",
+  requireAdmin,
+  (req, res) => {
+
+    db.query(
+      `SELECT
+         u.id,
+         u.username,
+         COALESCE(w.balance, 0) AS balance
+       FROM users u
+       LEFT JOIN wallet w
+         ON u.username = w.username
+       ORDER BY u.id DESC`,
+      (err, rows) => {
+
+        if (err) {
+
+          console.error(err);
+
+          return res.status(500).json({
+            success: false,
+            message: "Database Error"
+          });
+        }
+
+        res.json(rows);
 
       }
     );
