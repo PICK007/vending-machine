@@ -150,73 +150,107 @@ app.post("/login", (req, res) => {
 // =========================
 // REGISTER
 // =========================
-app.post("/register", async (req, res) => {
 
-    try {
+app.post("/register", (req, res) => {
 
-        const { username, password } = req.body;
+  const username = String(req.body.username || "").trim();
+  const password = String(req.body.password || "");
 
-        if (!username || !password) {
-            return res.json({
-                success: false,
-                message: "กรุณากรอก Username และ Password"
+  if (!username || !password) {
+    return res.json({
+      success: false,
+      message: "กรุณากรอก Username และ Password"
+    });
+  }
+
+  if (username.length < 3) {
+    return res.json({
+      success: false,
+      message: "Username ต้องมีอย่างน้อย 3 ตัว"
+    });
+  }
+
+  if (password.length < 4) {
+    return res.json({
+      success: false,
+      message: "Password ต้องมีอย่างน้อย 4 ตัว"
+    });
+  }
+
+  // เช็ก Username ซ้ำ
+  db.query(
+    "SELECT id FROM users WHERE username = ? LIMIT 1",
+    [username],
+    (err, rows) => {
+
+      if (err) {
+        console.error("Check user error:", err);
+
+        return res.status(500).json({
+          success: false,
+          message: "ตรวจสอบ Username ไม่สำเร็จ"
+        });
+      }
+
+      if (rows.length > 0) {
+        return res.json({
+          success: false,
+          message: "Username นี้มีคนใช้แล้ว"
+        });
+      }
+
+      // สร้าง User
+      db.query(
+        "INSERT INTO users (username, password, wallet) VALUES (?, ?, 0)",
+        [username, password],
+        (err) => {
+
+          if (err) {
+            console.error("Create user error:", err);
+
+            return res.status(500).json({
+              success: false,
+              message: "สร้างบัญชีไม่สำเร็จ"
             });
-        }
+          }
 
-        if (username.length < 3) {
-            return res.json({
-                success: false,
-                message: "Username ต้องมีอย่างน้อย 3 ตัว"
-            });
-        }
-
-        if (password.length < 4) {
-            return res.json({
-                success: false,
-                message: "Password ต้องมีอย่างน้อย 4 ตัว"
-            });
-        }
-
-        // เช็ก Username ซ้ำ
-        const [existing] = await db.query(
-            "SELECT id FROM users WHERE username = ? LIMIT 1",
-            [username]
-        );
-
-        if (existing.length > 0) {
-            return res.json({
-                success: false,
-                message: "Username นี้มีคนใช้แล้ว"
-            });
-        }
-
-        // สร้าง User
-        await db.query(
-            "INSERT INTO users (username, password, wallet) VALUES (?, ?, 0)",
-            [username, password]
-        );
-
-        // สร้าง Wallet
-        await db.query(
+          // สร้าง Wallet
+          db.query(
             "INSERT INTO wallet (username, balance) VALUES (?, 0)",
-            [username]
-        );
+            [username],
+            (err) => {
 
-        res.json({
-            success: true,
-            message: "สมัครสมาชิกสำเร็จ"
-        });
+              if (err) {
+                console.error("Create wallet error:", err);
 
-    } catch (error) {
+                // ถ้าสร้าง Wallet ไม่สำเร็จ
+                // ลบ User ที่เพิ่งสร้างออก
+                db.query(
+                  "DELETE FROM users WHERE username = ?",
+                  [username]
+                );
 
-        console.error(error);
+                return res.status(500).json({
+                  success: false,
+                  message: "สร้าง Wallet ไม่สำเร็จ"
+                });
+              }
 
-        res.json({
-            success: false,
-            message: "สมัครสมาชิกไม่สำเร็จ"
-        });
+              console.log("New user registered:", username);
+
+              res.json({
+                success: true,
+                message: "สมัครสมาชิกสำเร็จ"
+              });
+
+            }
+          );
+
+        }
+      );
 
     }
+  );
 
 });
 
