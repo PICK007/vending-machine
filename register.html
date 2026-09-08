@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>REGISTER - VENDING MACHINE</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+
+    background: #080808;
+
+    color: white;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+
+}
+
+.register-box {
+
+    width: 100%;
+
+    max-width: 400px;
+
+    background: #111;
+
+    border: 1px solid #f5c400;
+
+    border-radius: 15px;
+
+    padding: 35px;
+
+}
+
+h1 {
+
+    text-align: center;
+
+    color: #f5c400;
+
+    margin-bottom: 10px;
+
+    letter-spacing: 2px;
+
+}
+
+.subtitle {
+
+    text-align: center;
+
+    color: #777;
+
+    margin-bottom: 30px;
+
+}
+
+label {
+
+    display: block;
+
+    color: #aaa;
+
+    margin-bottom: 8px;
+
+}
+
+input {
+
+    width: 100%;
+
+    padding: 13px;
+
+    margin-bottom: 18px;
+
+    background: #080808;
+
+    border: 1px solid #333;
+
+    border-radius: 8px;
+
+    color: white;
+
+    font-size: 16px;
+
+    outline: none;
+
+}
+
+input:focus {
+
+    border-color: #f5c400;
+
+}
+
+button {
+
+    width: 100%;
+
+    padding: 13px;
+
+    background: #f5c400;
+
+    color: #111;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+.login-link {
+
+    text-align: center;
+
+    margin-top: 20px;
+
+    color: #aaa;
+
+}
+
+.login-link a {
+
+    color: #f5c400;
+
+    text-decoration: none;
+
+}
+
+#message {
+
+    text-align: center;
+
+    margin-top: 18px;
+
+    color: #ff5555;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="register-box">
+
+    <h1>VENDING MACHINE</h1>
+
+    <div class="subtitle">
+        สมัครสมาชิก
+    </div>
+
+
+    <label>
+        Username
+    </label>
+
+    <input
+        type="text"
+        id="username"
+        placeholder="Username"
+    >
+
+
+    <label>
+        Password
+    </label>
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Password"
+    >
+
+
+    <label>
+        ยืนยัน Password
+    </label>
+
+    <input
+        type="password"
+        id="confirmPassword"
+        placeholder="ยืนยัน Password"
+    >
+
+
+    <button onclick="register()">
+        สมัครสมาชิก
+    </button>
+
+
+    <div id="message"></div>
+
+
+    <div class="login-link">
+
+        มีบัญชีแล้ว?
+
+        <a href="/login.html">
+            เข้าสู่ระบบ
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function register() {
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+    const message =
+        document.getElementById("message");
+
+
+    if (!username || !password || !confirmPassword) {
+
+        message.innerText =
+            "กรุณากรอกข้อมูลให้ครบ";
+
+        return;
+
+    }
+
+
+    if (password !== confirmPassword) {
+
+        message.innerText =
+            "Password ไม่ตรงกัน";
+
+        return;
+
+    }
+
+
+    message.innerText =
+        "กำลังสมัครสมาชิก...";
+
+
+    fetch("/register", {
+
+        method: "POST",
+
+        headers: {
+
+            "Content-Type": "application/json"
+
+        },
+
+        body: JSON.stringify({
+
+            username: username,
+
+            password: password
+
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.success) {
+
+            alert("สมัครสมาชิกสำเร็จ!");
+
+            window.location.href =
+                "/login.html";
+
+        } else {
+
+            message.innerText =
+                data.message;
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.log(error);
+
+        message.innerText =
+            "เชื่อมต่อ Server ไม่ได้";
+
+    });
+
+}
+
+</script>
+
+
+</body>
+
+</html>

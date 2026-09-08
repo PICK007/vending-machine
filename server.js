@@ -148,6 +148,79 @@ app.post("/login", (req, res) => {
 });
 
 // =========================
+// REGISTER
+// =========================
+app.post("/register", async (req, res) => {
+
+    try {
+
+        const { username, password } = req.body;
+
+        if (!username || !password) {
+            return res.json({
+                success: false,
+                message: "กรุณากรอก Username และ Password"
+            });
+        }
+
+        if (username.length < 3) {
+            return res.json({
+                success: false,
+                message: "Username ต้องมีอย่างน้อย 3 ตัว"
+            });
+        }
+
+        if (password.length < 4) {
+            return res.json({
+                success: false,
+                message: "Password ต้องมีอย่างน้อย 4 ตัว"
+            });
+        }
+
+        // เช็ก Username ซ้ำ
+        const [existing] = await db.query(
+            "SELECT id FROM users WHERE username = ? LIMIT 1",
+            [username]
+        );
+
+        if (existing.length > 0) {
+            return res.json({
+                success: false,
+                message: "Username นี้มีคนใช้แล้ว"
+            });
+        }
+
+        // สร้าง User
+        await db.query(
+            "INSERT INTO users (username, password, wallet) VALUES (?, ?, 0)",
+            [username, password]
+        );
+
+        // สร้าง Wallet
+        await db.query(
+            "INSERT INTO wallet (username, balance) VALUES (?, 0)",
+            [username]
+        );
+
+        res.json({
+            success: true,
+            message: "สมัครสมาชิกสำเร็จ"
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.json({
+            success: false,
+            message: "สมัครสมาชิกไม่สำเร็จ"
+        });
+
+    }
+
+});
+
+// =========================
 // LOGOUT
 // =========================
 
