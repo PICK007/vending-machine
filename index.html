@@ -6,7 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>VENDING MACHINE</title>
+```
+<title>VENDING MACHINE</title>
+```
 
 <style>
 
@@ -30,6 +32,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 20px;
     }
 
     .logo {
@@ -37,6 +40,22 @@
         font-size: 26px;
         font-weight: bold;
         letter-spacing: 2px;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .user-info {
+        text-align: right;
+    }
+
+    .username {
+        color: #f5c400;
+        font-weight: bold;
+        margin-bottom: 4px;
     }
 
     .status {
@@ -47,6 +66,21 @@
     .status span {
         color: #00ff66;
         font-weight: bold;
+    }
+
+    .logout-button {
+        padding: 9px 14px;
+        border: 1px solid #ff4444;
+        border-radius: 8px;
+        background: #111;
+        color: #ff4444;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .logout-button:hover {
+        background: #ff4444;
+        color: white;
     }
 
     .hero {
@@ -219,14 +253,8 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
-
-        /* จำกัดความสูง */
         max-height: 300px;
-
-        /* เปิด Scroll */
         overflow-y: auto;
-
-        /* กัน Scrollbar ชิดกล่อง */
         padding-right: 8px;
     }
 
@@ -291,8 +319,6 @@
         border-radius: 14px;
         padding: 25px;
         text-align: center;
-
-        /* ไม่ให้ Modal ยาวเกินหน้าจอ */
         max-height: 90vh;
         overflow-y: auto;
         margin: 20px auto;
@@ -414,14 +440,8 @@
         text-align: left;
         border-top: 1px solid #292929;
         padding-top: 15px;
-
-        /* จำกัดความสูง */
         max-height: 300px;
-
-        /* เปิด Scroll */
         overflow-y: auto;
-
-        /* กัน Scrollbar ชิดขอบ */
         padding-right: 8px;
     }
 
@@ -496,10 +516,28 @@
 
         header {
             padding: 18px 5%;
+            align-items: flex-start;
         }
 
         .logo {
             font-size: 20px;
+        }
+
+        .header-right {
+            gap: 8px;
+        }
+
+        .username {
+            font-size: 13px;
+        }
+
+        .status {
+            font-size: 12px;
+        }
+
+        .logout-button {
+            padding: 8px 10px;
+            font-size: 12px;
         }
 
         .hero h1 {
@@ -527,73 +565,119 @@
 
 <body>
 
-
 <!-- ================= HEADER ================= -->
 
 <header>
 
-    <div class="logo">
-        VENDING MACHINE
+```
+<div class="logo">
+    VENDING MACHINE
+</div>
+
+<div class="header-right">
+
+    <div class="user-info">
+
+        <div class="username">
+            👤 <span id="username">กำลังโหลด...</span>
+        </div>
+
+        <div class="status">
+
+            💰 Wallet:
+
+            <span id="wallet">
+                กำลังโหลด...
+            </span>
+
+        </div>
+
     </div>
 
-    <div class="status">
+    <button
+        class="logout-button"
+        onclick="logout()"
+    >
+        🚪 Logout
+    </button>
 
-        💰 Wallet:
-
-        <span id="wallet">
-            กำลังโหลด...
-        </span>
-
-    </div>
+</div>
+```
 
 </header>
-
 
 <!-- ================= HERO ================= -->
 
 <section class="hero">
 
-    <h1>
-        PRODUCTS
-    </h1>
+```
+<h1>
+    PRODUCTS
+</h1>
 
-    <p>
-        ตรวจสอบสินค้าและจำนวนสินค้าที่มีอยู่ในตู้
-    </p>
+<p>
+    ตรวจสอบสินค้าและจำนวนสินค้าที่มีอยู่ในตู้
+</p>
+```
 
 </section>
-
 
 <!-- ================= BUTTONS ================= -->
 
 <div class="top-buttons">
 
-    <button
-        class="main-button"
-        onclick="openTopup()"
-    >
-        💰 เติมเงิน
-    </button>
+```
+<button
+    class="main-button"
+    onclick="openTopup()"
+>
+    💰 เติมเงิน
+</button>
 
 
-    <a
-        href="/admin.html"
-        class="main-button admin-button"
-    >
-        ⚙️ จัดการระบบ
-    </a>
+<a
+    href="/admin.html"
+    class="main-button admin-button"
+>
+    ⚙️ จัดการระบบ
+</a>
+```
 
 </div>
-
 
 <!-- ================= PRODUCTS ================= -->
 
 <main class="container">
 
+```
+<div class="section-title">
+
+    <h2>
+        สินค้าทั้งหมด
+    </h2>
+
+    <div class="line"></div>
+
+</div>
+
+
+<div id="products">
+
+    <div class="loading">
+        กำลังโหลดสินค้า...
+    </div>
+
+</div>
+
+
+<!-- ================= PURCHASE HISTORY ================= -->
+
+<section class="purchase-section">
+
     <div class="section-title">
 
         <h2>
-            สินค้าทั้งหมด
+            🧾 ประวัติการซื้อ
         </h2>
 
         <div class="line"></div>
@@ -601,45 +685,21 @@
     </div>
 
 
-    <div id="products">
+    <div
+        id="purchaseHistory"
+        class="purchase-history"
+    >
 
         <div class="loading">
-            กำลังโหลดสินค้า...
+            กำลังโหลดประวัติการซื้อ...
         </div>
 
     </div>
 
-
-    <!-- ================= PURCHASE HISTORY ================= -->
-
-    <section class="purchase-section">
-
-        <div class="section-title">
-
-            <h2>
-                🧾 ประวัติการซื้อ
-            </h2>
-
-            <div class="line"></div>
-
-        </div>
-
-
-        <div
-            id="purchaseHistory"
-            class="purchase-history"
-        >
-
-            <div class="loading">
-                กำลังโหลดประวัติการซื้อ...
-            </div>
-
-        </div>
-
-    </section>
+</section>
+```
 
 </main>
-
 
 <!-- ================= TOPUP MODAL ================= -->
 
@@ -648,176 +708,185 @@
     class="modal"
 >
 
-    <div class="modal-box">
+```
+<div class="modal-box">
 
-        <!-- เลือกจำนวนเงิน -->
+    <div id="topupSelect">
 
-        <div id="topupSelect">
+        <h2>
+            💰 เติมเงิน Wallet
+        </h2>
 
-            <h2>
-                💰 เติมเงิน Wallet
-            </h2>
-
-            <p style="color:#888; margin-bottom:20px;">
-                เลือกจำนวนเงินที่ต้องการเติม
-            </p>
-
-
-            <input
-                type="number"
-                id="topupAmount"
-                placeholder="จำนวนเงิน"
-                min="1"
-                step="1"
-            >
+        <p style="color:#888; margin-bottom:20px;">
+            เลือกจำนวนเงินที่ต้องการเติม
+        </p>
 
 
-            <div class="money-buttons">
-
-                <button onclick="createTopup(10)">
-                    +10 บาท
-                </button>
-
-                <button onclick="createTopup(20)">
-                    +20 บาท
-                </button>
-
-                <button onclick="createTopup(50)">
-                    +50 บาท
-                </button>
-
-                <button onclick="createTopup(100)">
-                    +100 บาท
-                </button>
-
-            </div>
-
-
-            <button
-                class="main-button"
-                style="width:100%; margin-top:10px;"
-                onclick="createCustomTopup()"
-            >
-                เติมจำนวนที่กำหนด
-            </button>
-
-
-            <button
-                class="close-button"
-                onclick="closeTopup()"
-            >
-                ปิด
-            </button>
-
-        </div>
-
-
-        <!-- รายการชำระเงิน -->
-
-        <div
-            id="paymentBox"
-            class="payment-box"
+        <input
+            type="number"
+            id="topupAmount"
+            placeholder="จำนวนเงิน"
+            min="1"
+            step="1"
         >
 
-            <h2>
-                💳 จำลองการชำระเงิน
-            </h2>
 
+        <div class="money-buttons">
 
-            <div class="payment-status">
-
-                <div class="label">
-                    หมายเลขรายการ
-                </div>
-
-                <div
-                    id="transactionId"
-                    class="transaction-id"
-                >
-                    -
-                </div>
-
-
-                <div class="label" style="margin-top:15px;">
-                    จำนวนเงิน
-                </div>
-
-                <div
-                    id="paymentAmount"
-                    class="payment-amount"
-                >
-                    0 บาท
-                </div>
-
-
-                <div
-                    id="paymentStatus"
-                    class="pending"
-                >
-                    ⏳ รอชำระเงิน
-                </div>
-
-            </div>
-
-
-            <button
-                id="simulateButton"
-                class="simulate-button"
-                onclick="simulatePayment()"
-            >
-                ✓ จำลองการชำระเงิน
+            <button onclick="createTopup(10)">
+                +10 บาท
             </button>
 
+            <button onclick="createTopup(20)">
+                +20 บาท
+            </button>
 
-            <button
-                class="close-button"
-                onclick="closeTopup()"
-            >
-                ยกเลิก
+            <button onclick="createTopup(50)">
+                +50 บาท
+            </button>
+
+            <button onclick="createTopup(100)">
+                +100 บาท
             </button>
 
         </div>
 
 
-        <!-- ประวัติเติมเงิน -->
+        <button
+            class="main-button"
+            style="width:100%; margin-top:10px;"
+            onclick="createCustomTopup()"
+        >
+            เติมจำนวนที่กำหนด
+        </button>
 
-        <div class="history">
 
-            <h3>
-                📜 ประวัติเติมเงิน
-            </h3>
+        <button
+            class="close-button"
+            onclick="closeTopup()"
+        >
+            ปิด
+        </button>
 
-            <div id="topupHistory">
-                กำลังโหลด...
+    </div>
+
+
+    <div
+        id="paymentBox"
+        class="payment-box"
+    >
+
+        <h2>
+            💳 จำลองการชำระเงิน
+        </h2>
+
+
+        <div class="payment-status">
+
+            <div class="label">
+                หมายเลขรายการ
             </div>
 
+            <div
+                id="transactionId"
+                class="transaction-id"
+            >
+                -
+            </div>
+
+
+            <div class="label" style="margin-top:15px;">
+                จำนวนเงิน
+            </div>
+
+            <div
+                id="paymentAmount"
+                class="payment-amount"
+            >
+                0 บาท
+            </div>
+
+
+            <div
+                id="paymentStatus"
+                class="pending"
+            >
+                ⏳ รอชำระเงิน
+            </div>
+
+        </div>
+
+
+        <button
+            id="simulateButton"
+            class="simulate-button"
+            onclick="simulatePayment()"
+        >
+            ✓ จำลองการชำระเงิน
+        </button>
+
+
+        <button
+            class="close-button"
+            onclick="closeTopup()"
+        >
+            ยกเลิก
+        </button>
+
+    </div>
+
+
+    <div class="history">
+
+        <h3>
+            📜 ประวัติเติมเงิน
+        </h3>
+
+        <div id="topupHistory">
+            กำลังโหลด...
         </div>
 
     </div>
 
 </div>
+```
 
+</div>
 
 <!-- ================= FOOTER ================= -->
 
 <footer>
 
-    VENDING MACHINE © 2026
+```
+VENDING MACHINE © 2026
+```
 
 </footer>
-
 
 <script>
 
 let currentTransactionId = null;
+let buyingProduct = false;
+
+
+// =========================
+// AUTH HEADERS
+// =========================
 
 function authHeaders() {
-    const token = localStorage.getItem("vendingToken");
+
+    const token =
+        localStorage.getItem("vendingToken");
 
     return {
+
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
+
+        "Authorization":
+            "Bearer " + token
+
     };
+
 }
 
 
@@ -827,14 +896,76 @@ function authHeaders() {
 
 function checkLogin() {
 
-    const token = localStorage.getItem("vendingToken");
+    const token =
+        localStorage.getItem("vendingToken");
 
     if (!token) {
-        window.location.href = "/login.html";
+
+        window.location.href =
+            "/login.html";
+
         return false;
+
     }
 
     return true;
+
+}
+
+
+// =========================
+// LOGOUT
+// =========================
+
+function logout() {
+
+    const token =
+        localStorage.getItem("vendingToken");
+
+    if (token) {
+
+        fetch("/logout", {
+
+            method: "POST",
+
+            headers: authHeaders()
+
+        }).catch(error => {
+
+            console.log(
+                "Logout server error:",
+                error
+            );
+
+        });
+
+    }
+
+    localStorage.removeItem("vendingToken");
+    localStorage.removeItem("vendingUsername");
+
+    window.location.href =
+        "/login.html";
+
+}
+
+
+// =========================
+// โหลด Username
+// =========================
+
+function loadUsername() {
+
+    const username =
+        localStorage.getItem("vendingUsername");
+
+    if (username) {
+
+        document.getElementById("username").innerText =
+            username;
+
+    }
+
 }
 
 
@@ -846,67 +977,45 @@ function buyProduct(id) {
 
     if (!checkLogin()) return;
 
+    // กันกดซื้อซ้ำ
+    if (buyingProduct) {
+
+        alert("กำลังดำเนินการซื้อ กรุณารอสักครู่");
+
+        return;
+    }
+
+    buyingProduct = true;
+
+    // ปิดปุ่มซื้อทั้งหมด
+    document
+        .querySelectorAll(".buy-button")
+        .forEach(button => {
+
+            button.disabled = true;
+            button.innerText = "กำลังจ่ายสินค้า...";
+
+        });
+
+
     fetch("/buy/" + id, {
+
         method: "POST",
+
         headers: authHeaders()
-    })
 
-    .then(response => response.json())
-
-    .then(data => {
-
-        if (data.success) {
-
-            alert(
-                "ซื้อสินค้าสำเร็จ\n\n" +
-                "สินค้า: " + (data.product || data.productName || "") + "\n" +
-                "ราคา: " + (data.price || "") + " บาท\n" +
-                "Wallet เหลือ: " + data.balance + " บาท"
-            );
-
-            loadProducts();
-            loadWallet();
-            loadPurchaseHistory();
-
-        } else {
-
-            alert(data.message);
-
-        }
-
-    })
-
-    .catch(error => {
-
-        console.log(error);
-        alert("ไม่สามารถเชื่อมต่อ Server ได้");
-
-    });
-}
-
-
-// =========================
-// โหลด Wallet
-// =========================
-
-function loadWallet() {
-
-    if (!checkLogin()) return;
-
-    fetch("/wallet", {
-        headers: authHeaders()
     })
 
     .then(response => {
 
         if (response.status === 401) {
-            localStorage.removeItem("vendingToken");
-            window.location.href = "/login.html";
-            return;
-        }
 
-        if (!response.ok) {
-            throw new Error("โหลด Wallet ไม่สำเร็จ");
+            localStorage.removeItem("vendingToken");
+            localStorage.removeItem("vendingUsername");
+
+            window.location.href = "/login.html";
+
+            return null;
         }
 
         return response.json();
@@ -917,16 +1026,246 @@ function loadWallet() {
 
         if (!data) return;
 
-        document.getElementById("wallet").innerText =
+        // =========================================
+        // สร้าง Order สำเร็จ
+        // =========================================
+
+        if (data.success && data.orderId) {
+
+            alert(
+                "กำลังจ่ายสินค้า...\n\n" +
+                "สินค้า: " +
+                (data.product || "") +
+                "\nราคา: " +
+                (data.price || "") +
+                " บาท"
+            );
+
+            // รอ ESP32 ทำงาน
+            waitForOrder(data.orderId);
+
+        }
+
+        else {
+
+            alert(data.message || "ซื้อสินค้าไม่สำเร็จ");
+
+            buyingProduct = false;
+
+            loadProducts();
+            loadWallet();
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.log(error);
+
+        alert(
+            "ไม่สามารถเชื่อมต่อ Server ได้"
+        );
+
+        buyingProduct = false;
+
+        loadProducts();
+
+    });
+
+}
+
+function waitForOrder(orderId) {
+
+    let attempts = 0;
+
+    const maxAttempts = 40;
+
+    const checkOrder = setInterval(() => {
+
+        attempts++;
+
+        fetch("/order/" + orderId, {
+
+            headers: authHeaders()
+
+        })
+
+        .then(response => {
+
+            if (response.status === 401) {
+
+                clearInterval(checkOrder);
+
+                localStorage.removeItem("vendingToken");
+                localStorage.removeItem("vendingUsername");
+
+                window.location.href = "/login.html";
+
+                return null;
+            }
+
+            return response.json();
+
+        })
+
+        .then(data => {
+
+            if (!data) return;
+
+            console.log(
+                "Order Status:",
+                data.status
+            );
+
+            // =========================================
+            // จ่ายสำเร็จ
+            // =========================================
+
+            if (data.status === "SUCCESS") {
+
+                clearInterval(checkOrder);
+
+                alert(
+                    "จ่ายสินค้าสำเร็จ! ✅\n\n" +
+                    "สินค้า: " +
+                    data.product +
+                    "\nราคา: " +
+                    data.price +
+                    " บาท"
+                );
+
+                buyingProduct = false;
+
+                loadProducts();
+                loadWallet();
+                loadPurchaseHistory();
+
+            }
+
+            // =========================================
+            // จ่ายไม่สำเร็จ
+            // =========================================
+
+            else if (data.status === "FAILED") {
+
+                clearInterval(checkOrder);
+
+                alert(
+                    "จ่ายสินค้าไม่สำเร็จ ❌\n\n" +
+                    "ไม่มีการหักเงิน"
+                );
+
+                buyingProduct = false;
+
+                loadProducts();
+                loadWallet();
+                loadPurchaseHistory();
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.log(
+                "ตรวจสอบ Order Error:",
+                error
+            );
+
+        });
+
+
+        // =========================================
+        // ครบ 40 วินาที
+        // =========================================
+
+        if (attempts >= maxAttempts) {
+
+            clearInterval(checkOrder);
+
+            alert(
+                "ยังไม่ได้รับผลจากตู้\n\n" +
+                "กรุณาตรวจสอบตู้หรือ ESP32"
+            );
+
+            buyingProduct = false;
+
+            loadProducts();
+            loadWallet();
+
+        }
+
+    }, 1000);
+
+}
+
+// =========================
+// โหลด Wallet
+// =========================
+
+function loadWallet() {
+
+    if (!checkLogin()) return;
+
+    fetch("/wallet", {
+
+        headers:
+            authHeaders()
+
+    })
+
+    .then(response => {
+
+        if (response.status === 401) {
+
+            localStorage.removeItem(
+                "vendingToken"
+            );
+
+            localStorage.removeItem(
+                "vendingUsername"
+            );
+
+            window.location.href =
+                "/login.html";
+
+            return;
+
+        }
+
+        if (!response.ok) {
+
+            throw new Error(
+                "โหลด Wallet ไม่สำเร็จ"
+            );
+
+        }
+
+        return response.json();
+
+    })
+
+    .then(data => {
+
+        if (!data) return;
+
+        document.getElementById(
+            "wallet"
+        ).innerText =
             data.balance + " บาท";
 
     })
 
     .catch(error => {
 
-        console.log("โหลด Wallet ไม่ได้:", error);
+        console.log(
+            "โหลด Wallet ไม่ได้:",
+            error
+        );
 
     });
+
 }
 
 
@@ -938,13 +1277,20 @@ function openTopup() {
 
     if (!checkLogin()) return;
 
-    document.getElementById("topupModal").style.display = "flex";
+    document.getElementById(
+        "topupModal"
+    ).style.display = "flex";
 
-    document.getElementById("topupSelect").style.display = "block";
+    document.getElementById(
+        "topupSelect"
+    ).style.display = "block";
 
-    document.getElementById("paymentBox").style.display = "none";
+    document.getElementById(
+        "paymentBox"
+    ).style.display = "none";
 
     loadTopupHistory();
+
 }
 
 
@@ -954,7 +1300,9 @@ function openTopup() {
 
 function closeTopup() {
 
-    document.getElementById("topupModal").style.display = "none";
+    document.getElementById(
+        "topupModal"
+    ).style.display = "none";
 
     currentTransactionId = null;
 
@@ -975,11 +1323,20 @@ function createTopup(amount) {
 function createCustomTopup() {
 
     const amount =
-        Number(document.getElementById("topupAmount").value);
+        Number(
+            document.getElementById(
+                "topupAmount"
+            ).value
+        );
 
-    if (!Number.isInteger(amount) || amount <= 0) {
+    if (
+        !Number.isInteger(amount) ||
+        amount <= 0
+    ) {
 
-        alert("กรุณาใส่จำนวนเงินเป็นจำนวนเต็มมากกว่า 0");
+        alert(
+            "กรุณาใส่จำนวนเงินเป็นจำนวนเต็มมากกว่า 0"
+        );
 
         return;
 
@@ -998,53 +1355,78 @@ function createTopupRequest(amount) {
 
     if (!checkLogin()) return;
 
-    fetch("/wallet/topup/create", {
+    fetch(
+        "/wallet/topup/create",
+        {
 
-        method: "POST",
+            method: "POST",
 
-        headers: authHeaders(),
+            headers:
+                authHeaders(),
 
-        body: JSON.stringify({
-            amount: amount
-        })
+            body:
+                JSON.stringify({
+                    amount: amount
+                })
 
-    })
+        }
+    )
 
-    .then(response => response.json())
+    .then(response =>
+        response.json()
+    )
 
     .then(data => {
 
         if (!data.success) {
 
             alert(data.message);
+
             return;
 
         }
 
-        currentTransactionId = data.transactionId;
-
-        document.getElementById("transactionId").innerText =
+        currentTransactionId =
             data.transactionId;
 
-        document.getElementById("paymentAmount").innerText =
+        document.getElementById(
+            "transactionId"
+        ).innerText =
+            data.transactionId;
+
+        document.getElementById(
+            "paymentAmount"
+        ).innerText =
             data.amount + " บาท";
 
-        document.getElementById("paymentStatus").innerHTML =
+        document.getElementById(
+            "paymentStatus"
+        ).innerHTML =
             "⏳ รอชำระเงิน";
 
-        document.getElementById("paymentStatus").className =
+        document.getElementById(
+            "paymentStatus"
+        ).className =
             "pending";
 
-        document.getElementById("simulateButton").disabled =
+        document.getElementById(
+            "simulateButton"
+        ).disabled =
             false;
 
-        document.getElementById("simulateButton").innerText =
+        document.getElementById(
+            "simulateButton"
+        ).innerText =
             "✓ จำลองการชำระเงิน";
 
-        document.getElementById("topupSelect").style.display =
+        document.getElementById(
+            "topupSelect"
+        ).style.display =
             "none";
 
-        document.getElementById("paymentBox").style.display =
+        document.getElementById(
+            "paymentBox"
+        ).style.display =
             "block";
 
     })
@@ -1053,9 +1435,12 @@ function createTopupRequest(amount) {
 
         console.log(error);
 
-        alert("สร้างรายการเติมเงินไม่สำเร็จ");
+        alert(
+            "สร้างรายการเติมเงินไม่สำเร็จ"
+        );
 
     });
+
 }
 
 
@@ -1067,28 +1452,44 @@ function simulatePayment() {
 
     if (!currentTransactionId) {
 
-        alert("ไม่พบรายการเติมเงิน");
+        alert(
+            "ไม่พบรายการเติมเงิน"
+        );
+
         return;
 
     }
 
     const button =
-        document.getElementById("simulateButton");
+        document.getElementById(
+            "simulateButton"
+        );
 
     button.disabled = true;
 
-    button.innerText = "กำลังตรวจสอบ...";
+    button.innerText =
+        "กำลังตรวจสอบ...";
+
 
     fetch(
+
         "/wallet/topup/pay-simulate/" +
         currentTransactionId,
+
         {
+
             method: "POST",
-            headers: authHeaders()
+
+            headers:
+                authHeaders()
+
         }
+
     )
 
-    .then(response => response.json())
+    .then(response =>
+        response.json()
+    )
 
     .then(data => {
 
@@ -1105,10 +1506,14 @@ function simulatePayment() {
 
         }
 
-        document.getElementById("paymentStatus").innerHTML =
+        document.getElementById(
+            "paymentStatus"
+        ).innerHTML =
             "✓ ชำระเงินสำเร็จ";
 
-        document.getElementById("paymentStatus").className =
+        document.getElementById(
+            "paymentStatus"
+        ).className =
             "success";
 
         button.innerText =
@@ -1118,12 +1523,21 @@ function simulatePayment() {
 
         loadTopupHistory();
 
+
         setTimeout(() => {
 
             alert(
+
                 "เติมเงินสำเร็จ!\n\n" +
-                "จำนวน: +" + data.amount + " บาท\n\n" +
-                "Wallet: " + data.balance + " บาท"
+
+                "จำนวน: +" +
+                data.amount +
+                " บาท\n\n" +
+
+                "Wallet: " +
+                data.balance +
+                " บาท"
+
             );
 
         }, 100);
@@ -1139,9 +1553,12 @@ function simulatePayment() {
         button.innerText =
             "✓ จำลองการชำระเงิน";
 
-        alert("ไม่สามารถเชื่อมต่อ Server ได้");
+        alert(
+            "ไม่สามารถเชื่อมต่อ Server ได้"
+        );
 
     });
+
 }
 
 
@@ -1153,21 +1570,31 @@ function loadTopupHistory() {
 
     if (!checkLogin()) return;
 
-    fetch("/wallet/topup/history", {
-        headers: authHeaders()
-    })
+    fetch(
+        "/wallet/topup/history",
+        {
+            headers:
+                authHeaders()
+        }
+    )
 
-    .then(response => response.json())
+    .then(response =>
+        response.json()
+    )
 
     .then(data => {
 
         const box =
-            document.getElementById("topupHistory");
+            document.getElementById(
+                "topupHistory"
+            );
 
         if (!Array.isArray(data)) {
 
             box.innerHTML =
-                `<div style="color:#777;">ยังไม่มีประวัติ</div>`;
+                `<div style="color:#777;">
+                    ยังไม่มีประวัติ
+                </div>`;
 
             return;
 
@@ -1176,7 +1603,9 @@ function loadTopupHistory() {
         if (data.length === 0) {
 
             box.innerHTML =
-                `<div style="color:#777;">ยังไม่มีประวัติ</div>`;
+                `<div style="color:#777;">
+                    ยังไม่มีประวัติ
+                </div>`;
 
             return;
 
@@ -1186,27 +1615,42 @@ function loadTopupHistory() {
 
         data.forEach(item => {
 
-            let statusText = "รอชำระเงิน";
-            let statusClass = "pending";
+            let statusText =
+                "รอชำระเงิน";
+
+            let statusClass =
+                "pending";
+
 
             if (item.status === "SUCCESS") {
 
-                statusText = "สำเร็จ";
-                statusClass = "success";
+                statusText =
+                    "สำเร็จ";
+
+                statusClass =
+                    "success";
 
             }
 
-            else if (item.status === "CANCELLED") {
+            else if (
+                item.status === "CANCELLED"
+            ) {
 
-                statusText = "ยกเลิก";
+                statusText =
+                    "ยกเลิก";
 
             }
+
 
             const date =
                 item.created_at
-                    ? new Date(item.created_at)
-                        .toLocaleString("th-TH")
+                    ? new Date(
+                        item.created_at
+                    ).toLocaleString(
+                        "th-TH"
+                    )
                     : "-";
+
 
             box.innerHTML += `
 
@@ -1250,6 +1694,7 @@ function loadTopupHistory() {
         );
 
     });
+
 }
 
 
@@ -1261,16 +1706,24 @@ function loadPurchaseHistory() {
 
     if (!checkLogin()) return;
 
-    fetch("/purchase/history", {
-        headers: authHeaders()
-    })
+    fetch(
+        "/purchase/history",
+        {
+            headers:
+                authHeaders()
+        }
+    )
 
-    .then(response => response.json())
+    .then(response =>
+        response.json()
+    )
 
     .then(data => {
 
         const box =
-            document.getElementById("purchaseHistory");
+            document.getElementById(
+                "purchaseHistory"
+            );
 
         if (!Array.isArray(data)) {
 
@@ -1302,9 +1755,13 @@ function loadPurchaseHistory() {
 
             const date =
                 item.created_at
-                    ? new Date(item.created_at)
-                        .toLocaleString("th-TH")
+                    ? new Date(
+                        item.created_at
+                    ).toLocaleString(
+                        "th-TH"
+                    )
                     : "-";
+
 
             box.innerHTML += `
 
@@ -1323,7 +1780,9 @@ function loadPurchaseHistory() {
                     </div>
 
                     <div class="purchase-price">
-                        -${Number(item.price).toFixed(2)} บาท
+                        -${Number(
+                            item.price
+                        ).toFixed(2)} บาท
                     </div>
 
                 </div>
@@ -1342,6 +1801,7 @@ function loadPurchaseHistory() {
         );
 
     });
+
 }
 
 
@@ -1356,7 +1816,11 @@ function loadProducts() {
     .then(response => {
 
         if (!response.ok) {
-            throw new Error("Server Error");
+
+            throw new Error(
+                "Server Error"
+            );
+
         }
 
         return response.json();
@@ -1366,42 +1830,70 @@ function loadProducts() {
     .then(products => {
 
         const box =
-            document.getElementById("products");
+            document.getElementById(
+                "products"
+            );
 
         box.innerHTML = "";
+
 
         products.forEach(product => {
 
             let icon = "📦";
 
-            if (product.name.includes("น้ำ")) {
+
+            if (
+                product.name.includes("น้ำ")
+            ) {
+
                 icon = "💧";
+
             }
 
-            else if (product.name.includes("โค้ก")) {
+            else if (
+                product.name.includes("โค้ก")
+            ) {
+
                 icon = "🥤";
+
             }
 
-            else if (product.name.includes("เลย์")) {
+            else if (
+                product.name.includes("เลย์")
+            ) {
+
                 icon = "🍟";
+
             }
 
-            let stockClass = "available";
-            let stockText = "มีสินค้า";
+
+            let stockClass =
+                "available";
+
+            let stockText =
+                "มีสินค้า";
+
 
             if (product.stock <= 0) {
 
-                stockClass = "out-stock";
-                stockText = "สินค้าหมด";
+                stockClass =
+                    "out-stock";
+
+                stockText =
+                    "สินค้าหมด";
 
             }
 
             else if (product.stock <= 3) {
 
-                stockClass = "low-stock";
-                stockText = "สินค้าใกล้หมด";
+                stockClass =
+                    "low-stock";
+
+                stockText =
+                    "สินค้าใกล้หมด";
 
             }
+
 
             box.innerHTML += `
 
@@ -1439,7 +1931,12 @@ function loadProducts() {
                     <button
                         class="buy-button"
                         onclick="buyProduct(${product.id})"
-                        ${product.stock <= 0 ? "disabled" : ""}
+                        ${
+                            product.stock <= 0 ||
+                            buyingProduct
+                                ? "disabled"
+                                : ""
+                        }
                     >
                         ซื้อสินค้า
                     </button>
@@ -1449,6 +1946,7 @@ function loadProducts() {
             `;
 
         });
+
 
         if (products.length === 0) {
 
@@ -1472,6 +1970,7 @@ function loadProducts() {
         );
 
     });
+
 }
 
 
@@ -1481,20 +1980,33 @@ function loadProducts() {
 
 if (checkLogin()) {
 
+    loadUsername();
+
     loadProducts();
+
     loadWallet();
+
     loadPurchaseHistory();
 
-    setInterval(loadProducts, 1000);
 
-    setInterval(loadWallet, 1000);
+    setInterval(
+        loadProducts,
+        1000
+    );
 
-    setInterval(loadPurchaseHistory, 3000);
+    setInterval(
+        loadWallet,
+        1000
+    );
+
+    setInterval(
+        loadPurchaseHistory,
+        3000
+    );
 
 }
 
 </script>
 
 </body>
-
 </html>
