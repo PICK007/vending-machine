@@ -7,6 +7,7 @@
     <title>Admin - Vending Machine</title>
 
     <style>
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -236,6 +237,52 @@
             margin-top: 7px;
         }
 
+        /* ================= ADD PRODUCT ================= */
+
+        .add-product-box {
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .add-product-box h3 {
+            color: #f5c400;
+            margin-bottom: 18px;
+            font-size: 20px;
+        }
+
+        .add-product-form {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr auto;
+            gap: 10px;
+        }
+
+        .add-product-input {
+            width: 100%;
+            padding: 12px;
+            background: #080808;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .add-product-button {
+            padding: 12px 18px;
+            background: #f5c400;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .add-product-button:hover {
+            opacity: 0.9;
+        }
+
         /* ================= PRODUCTS ================= */
 
         .products {
@@ -324,6 +371,39 @@
             overflow-x: auto;
         }
 
+        .history-container {
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border-radius: 14px;
+            background: #111;
+            border: 1px solid #292929;
+        }
+
+        .history-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .history-container::-webkit-scrollbar-track {
+            background: #0b0b0b;
+        }
+
+        .history-container::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 10px;
+        }
+
+        .history-container::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        .history-container th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -362,6 +442,14 @@
 
         /* ================= MOBILE ================= */
 
+        @media (max-width: 800px) {
+
+            .add-product-form {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
         @media (max-width: 700px) {
 
             .stats {
@@ -388,7 +476,13 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+
+            .history-container {
+                max-height: 350px;
+            }
+
         }
+
     </style>
 </head>
 
@@ -562,13 +656,61 @@
 
             </div>
 
+
+            <!-- ================= ADD NEW PRODUCT ================= -->
+
+            <div class="add-product-box">
+
+                <h3>
+                    ➕ เพิ่มสินค้าใหม่
+                </h3>
+
+                <div class="add-product-form">
+
+                    <input
+                        id="newProductName"
+                        class="add-product-input"
+                        type="text"
+                        placeholder="ชื่อสินค้า"
+                    >
+
+                    <input
+                        id="newProductPrice"
+                        class="add-product-input"
+                        type="number"
+                        min="0"
+                        placeholder="ราคา (บาท)"
+                    >
+
+                    <input
+                        id="newProductStock"
+                        class="add-product-input"
+                        type="number"
+                        min="0"
+                        placeholder="Stock เริ่มต้น"
+                    >
+
+                    <button
+                        class="add-product-button"
+                        onclick="addNewProduct()"
+                    >
+                        เพิ่มสินค้า
+                    </button>
+
+                </div>
+
+            </div>
+
+
             <div
                 id="products"
                 class="products"
             >
+
                 <div class="empty">
                     กำลังโหลดสินค้า...
                 </div>
+
             </div>
 
         </section>
@@ -586,7 +728,7 @@
 
             </div>
 
-            <div class="table-box">
+            <div class="history-container">
 
                 <table>
 
@@ -604,12 +746,14 @@
                     <tbody id="purchaseHistory">
 
                         <tr>
+
                             <td
                                 colspan="4"
                                 class="empty"
                             >
                                 กำลังโหลด...
                             </td>
+
                         </tr>
 
                     </tbody>
@@ -650,12 +794,14 @@
                     <tbody id="users">
 
                         <tr>
+
                             <td
                                 colspan="3"
                                 class="empty"
                             >
                                 กำลังโหลด...
                             </td>
+
                         </tr>
 
                     </tbody>
@@ -919,6 +1065,139 @@ async function loadProducts() {
 
 
 // ==================================================
+// ADD NEW PRODUCT
+// ==================================================
+
+async function addNewProduct() {
+
+    if (!adminToken) {
+
+        alert("กรุณา Login Admin");
+
+        return;
+    }
+
+    const name =
+        document.getElementById(
+            "newProductName"
+        ).value.trim();
+
+    const price =
+        Number(
+            document.getElementById(
+                "newProductPrice"
+            ).value
+        );
+
+    const stock =
+        Number(
+            document.getElementById(
+                "newProductStock"
+            ).value
+        );
+
+    if (!name) {
+
+        alert("กรุณาใส่ชื่อสินค้า");
+
+        return;
+    }
+
+    if (!Number.isFinite(price) || price < 0) {
+
+        alert("กรุณาใส่ราคาให้ถูกต้อง");
+
+        return;
+    }
+
+    if (!Number.isInteger(stock) || stock < 0) {
+
+        alert("กรุณาใส่ Stock เป็นจำนวนเต็ม");
+
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                "/admin/product/add",
+                {
+
+                    method: "POST",
+
+                    headers:
+                        adminHeaders(),
+
+                    body:
+                        JSON.stringify({
+                            name: name,
+                            price: price,
+                            stock: stock
+                        })
+
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (response.status === 401) {
+
+            alert(
+                "Session Admin หมดอายุ"
+            );
+
+            logout();
+
+            return;
+        }
+
+        if (!response.ok ||
+            !data.success) {
+
+            alert(
+                data.message ||
+                "เพิ่มสินค้าไม่สำเร็จ"
+            );
+
+            return;
+        }
+
+        alert(
+            "เพิ่มสินค้าเรียบร้อย\nProduct ID: " +
+            data.productId
+        );
+
+        document.getElementById(
+            "newProductName"
+        ).value = "";
+
+        document.getElementById(
+            "newProductPrice"
+        ).value = "";
+
+        document.getElementById(
+            "newProductStock"
+        ).value = "";
+
+        loadProducts();
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "เชื่อมต่อ Server ไม่ได้"
+        );
+
+    }
+
+}
+
+
+// ==================================================
 // ADD STOCK
 // ==================================================
 
@@ -1163,12 +1442,14 @@ async function loadPurchaseHistory() {
 
             tbody.innerHTML = `
                 <tr>
+
                     <td
                         colspan="4"
                         class="empty"
                     >
                         ยังไม่มีประวัติการขาย
                     </td>
+
                 </tr>
             `;
 
@@ -1259,12 +1540,14 @@ async function loadUsers() {
 
             tbody.innerHTML = `
                 <tr>
+
                     <td
                         colspan="3"
                         class="empty"
                     >
                         ยังไม่มีผู้ใช้งาน
                     </td>
+
                 </tr>
             `;
 

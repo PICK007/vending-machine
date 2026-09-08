@@ -1533,6 +1533,84 @@ app.post(
 );
 
 // ==================================================
+// ADMIN ADD NEW PRODUCT
+// ==================================================
+
+app.post(
+  "/admin/product/add",
+  requireAdmin,
+  (req, res) => {
+
+    const name =
+      String(req.body.name || "").trim();
+
+    const price =
+      Number(req.body.price);
+
+    const stock =
+      Number(req.body.stock);
+
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "กรุณาใส่ชื่อสินค้า"
+      });
+    }
+
+    if (
+      !Number.isFinite(price) ||
+      price < 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "ราคาไม่ถูกต้อง"
+      });
+    }
+
+    if (
+      !Number.isInteger(stock) ||
+      stock < 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Stock ไม่ถูกต้อง"
+      });
+    }
+
+    db.query(
+      `INSERT INTO products
+       (name, price, stock)
+       VALUES (?, ?, ?)`,
+      [
+        name,
+        price,
+        stock
+      ],
+      (err, result) => {
+
+        if (err) {
+
+          console.error(err);
+
+          return res.status(500).json({
+            success: false,
+            message: "เพิ่มสินค้าไม่สำเร็จ"
+          });
+        }
+
+        res.json({
+          success: true,
+          message: "เพิ่มสินค้าเรียบร้อย",
+          productId: result.insertId
+        });
+
+      }
+    );
+
+  }
+);
+
+// ==================================================
 // ADMIN PRODUCTS - PRICE
 // ==================================================
 

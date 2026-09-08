@@ -6,560 +6,563 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-<title>VENDING MACHINE</title>
-
-
-<style>
-
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-    }
-
-    body {
-        background: #080808;
-        color: white;
-        min-height: 100vh;
-    }
-
-    header {
-        background: #0d0d0d;
-        border-bottom: 2px solid #f5c400;
-        padding: 20px 8%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .logo {
-        color: #f5c400;
-        font-size: 26px;
-        font-weight: bold;
-        letter-spacing: 2px;
-    }
-
-    .header-right {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .user-info {
-        text-align: right;
-    }
-
-    .username {
-        color: #f5c400;
-        font-weight: bold;
-        margin-bottom: 4px;
-    }
-
-    .status {
-        color: #aaa;
-        font-size: 14px;
-    }
-
-    .status span {
-        color: #00ff66;
-        font-weight: bold;
-    }
-
-    .logout-button {
-        padding: 9px 14px;
-        border: 1px solid #ff4444;
-        border-radius: 8px;
-        background: #111;
-        color: #ff4444;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .logout-button:hover {
-        background: #ff4444;
-        color: white;
-    }
-
-    .hero {
-        text-align: center;
-        padding: 55px 20px 35px;
-    }
-
-    .hero h1 {
-        font-size: 42px;
-        color: #f5c400;
-        letter-spacing: 3px;
-    }
-
-    .hero p {
-        color: #999;
-        margin-top: 10px;
-        font-size: 16px;
-    }
-
-    .top-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 12px;
-        margin: 20px auto 35px;
-        flex-wrap: wrap;
-    }
-
-    .main-button {
-        padding: 12px 20px;
-        border: none;
-        border-radius: 8px;
-        background: #f5c400;
-        color: #111;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .main-button:hover {
-        opacity: 0.85;
-    }
-
-    .admin-button {
-        background: #222;
-        color: #f5c400;
-        border: 1px solid #f5c400;
-        text-decoration: none;
-        display: inline-block;
-    }
-
-    .container {
-        width: 90%;
-        max-width: 1100px;
-        margin: auto;
-        padding-bottom: 50px;
-    }
-
-    .section-title {
-        margin-bottom: 25px;
-    }
-
-    .section-title h2 {
-        font-size: 24px;
-    }
-
-    .section-title .line {
-        height: 3px;
-        width: 60px;
-        background: #f5c400;
-        margin-top: 8px;
-    }
-
-    #products {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 22px;
-    }
-
-    .product-card {
-        background: #111;
-        border: 1px solid #292929;
-        border-radius: 14px;
-        padding: 25px;
-        transition: 0.3s;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .product-card:hover {
-        transform: translateY(-5px);
-        border-color: #f5c400;
-        box-shadow: 0 8px 30px rgba(245, 196, 0, 0.15);
-    }
-
-    .product-icon {
-        width: 65px;
-        height: 65px;
-        background: #f5c400;
-        color: #111;
-        border-radius: 12px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 28px;
-        margin-bottom: 20px;
-    }
-
-    .product-card h3 {
-        font-size: 21px;
-        margin-bottom: 12px;
-    }
-
-    .price {
-        color: #f5c400;
-        font-size: 25px;
-        font-weight: bold;
-        margin-bottom: 15px;
-    }
-
-    .stock {
-        color: #aaa;
-        font-size: 14px;
-    }
-
-    .stock strong {
-        color: white;
-    }
-
-    .available {
-        color: #00ff66 !important;
-    }
-
-    .low-stock {
-        color: #ff9900 !important;
-    }
-
-    .out-stock {
-        color: #ff3333 !important;
-    }
-
-    .buy-button {
-        margin-top: 15px;
-        width: 100%;
-        padding: 12px;
-        background: #f5c400;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        font-size: 15px;
-    }
-
-    .buy-button:hover {
-        opacity: 0.85;
-    }
-
-    .buy-button:disabled {
-        background: #333;
-        color: #777;
-        cursor: not-allowed;
-    }
-
-
-    /* ================= PURCHASE HISTORY ================= */
-
-    .purchase-section {
-        margin-top: 50px;
-    }
-
-    .purchase-history {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        max-height: 300px;
-        overflow-y: auto;
-        padding-right: 8px;
-    }
-
-    .purchase-item {
-        background: #111;
-        border: 1px solid #292929;
-        border-radius: 10px;
-        padding: 15px 18px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-        flex-shrink: 0;
-    }
-
-    .purchase-name {
-        font-size: 16px;
-        font-weight: bold;
-    }
-
-    .purchase-date {
-        color: #777;
-        font-size: 12px;
-        margin-top: 5px;
-    }
-
-    .purchase-price {
-        color: #ff5555;
-        font-weight: bold;
-        white-space: nowrap;
-    }
-
-    .empty-history {
-        background: #111;
-        border: 1px solid #222;
-        border-radius: 10px;
-        text-align: center;
-        color: #777;
-        padding: 25px;
-    }
-
-
-    /* ================= MODAL ================= */
-
-    .modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.80);
-        justify-content: center;
-        align-items: flex-start;
-        z-index: 1000;
-        padding: 20px;
-        overflow-y: auto;
-    }
-
-    .modal-box {
-        width: 100%;
-        max-width: 430px;
-        background: #111;
-        border: 1px solid #f5c400;
-        border-radius: 14px;
-        padding: 25px;
-        text-align: center;
-        max-height: 90vh;
-        overflow-y: auto;
-        margin: 20px auto;
-    }
-
-    .modal-box h2 {
-        color: #f5c400;
-        margin-bottom: 20px;
-    }
-
-    .modal-box input {
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid #333;
-        background: #080808;
-        color: white;
-        margin-bottom: 15px;
-        font-size: 16px;
-    }
-
-    .money-buttons {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-
-    .money-buttons button {
-        padding: 12px;
-        border: none;
-        border-radius: 8px;
-        background: #f5c400;
-        color: #111;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .close-button {
-        margin-top: 15px;
-        width: 100%;
-        padding: 10px;
-        background: #222;
-        color: white;
-        border: 1px solid #444;
-        border-radius: 8px;
-        cursor: pointer;
-    }
-
-
-    /* ================= PAYMENT ================= */
-
-    .payment-box {
-        display: none;
-    }
-
-    .payment-status {
-        background: #080808;
-        border: 1px solid #292929;
-        border-radius: 10px;
-        padding: 18px;
-        margin-bottom: 15px;
-    }
-
-    .payment-status .label {
-        color: #999;
-        font-size: 13px;
-        margin-bottom: 5px;
-    }
-
-    .transaction-id {
-        color: #f5c400;
-        font-size: 14px;
-        word-break: break-all;
-    }
-
-    .payment-amount {
-        font-size: 30px;
-        color: #f5c400;
-        font-weight: bold;
-        margin: 15px 0;
-    }
-
-    .pending {
-        color: #ff9900;
-        font-weight: bold;
-    }
-
-    .success {
-        color: #00ff66;
-        font-weight: bold;
-    }
-
-    .simulate-button {
-        width: 100%;
-        padding: 14px;
-        border: none;
-        border-radius: 8px;
-        background: #00c853;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        font-size: 16px;
-    }
-
-    .simulate-button:hover {
-        opacity: 0.85;
-    }
-
-    .simulate-button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-
-    /* ================= TOPUP HISTORY ================= */
-
-    .history {
-        margin-top: 20px;
-        text-align: left;
-        border-top: 1px solid #292929;
-        padding-top: 15px;
-        max-height: 300px;
-        overflow-y: auto;
-        padding-right: 8px;
-    }
-
-    .history h3 {
-        color: #f5c400;
-        margin-bottom: 12px;
-    }
-
-    .history-item {
-        background: #080808;
-        border: 1px solid #222;
-        border-radius: 8px;
-        padding: 10px;
-        margin-bottom: 8px;
-        font-size: 13px;
-    }
-
-    .history-item .amount {
-        color: #f5c400;
-        font-weight: bold;
-    }
-
-    .history-item .date {
-        color: #777;
-        margin-top: 4px;
-    }
-
-
-    /* ================= SCROLLBAR ================= */
-
-    .purchase-history::-webkit-scrollbar,
-    .history::-webkit-scrollbar,
-    .modal-box::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .purchase-history::-webkit-scrollbar-thumb,
-    .history::-webkit-scrollbar-thumb,
-    .modal-box::-webkit-scrollbar-thumb {
-        background: #f5c400;
-        border-radius: 10px;
-    }
-
-    .purchase-history::-webkit-scrollbar-track,
-    .history::-webkit-scrollbar-track,
-    .modal-box::-webkit-scrollbar-track {
-        background: #111;
-    }
-
-
-    /* ================= FOOTER ================= */
-
-    footer {
-        border-top: 1px solid #222;
-        text-align: center;
-        padding: 25px;
-        color: #666;
-        font-size: 13px;
-    }
-
-    .loading {
-        text-align: center;
-        color: #999;
-        padding: 50px;
-        grid-column: 1 / -1;
-    }
-
-
-    /* ================= MOBILE ================= */
-
-    @media (max-width: 600px) {
+    <title>VENDING MACHINE</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #080808;
+            color: white;
+            min-height: 100vh;
+        }
 
         header {
-            padding: 18px 5%;
-            align-items: flex-start;
+            background: #0d0d0d;
+            border-bottom: 2px solid #f5c400;
+            padding: 20px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
         }
 
         .logo {
-            font-size: 20px;
+            color: #f5c400;
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 2px;
         }
 
         .header-right {
-            gap: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            text-align: right;
         }
 
         .username {
-            font-size: 13px;
+            color: #f5c400;
+            font-weight: bold;
+            margin-bottom: 4px;
         }
 
         .status {
-            font-size: 12px;
-        }
-
-        .logout-button {
-            padding: 8px 10px;
-            font-size: 12px;
-        }
-
-        .hero h1 {
-            font-size: 30px;
-        }
-
-        .hero {
-            padding-top: 40px;
-        }
-
-        .purchase-item {
-            align-items: flex-start;
-            flex-direction: column;
-        }
-
-        .purchase-price {
+            color: #aaa;
             font-size: 14px;
         }
 
-    }
+        .status span {
+            color: #00ff66;
+            font-weight: bold;
+        }
 
-</style>
+        /* ================= ADMIN ลับ ================= */
+
+        .admin-secret {
+            color: #555;
+            text-decoration: none;
+            font-size: 18px;
+            opacity: 0.35;
+            padding: 5px;
+            transition: 0.2s;
+        }
+
+        .admin-secret:hover {
+            color: #f5c400;
+            opacity: 1;
+        }
+
+        .logout-button {
+            padding: 9px 14px;
+            border: 1px solid #ff4444;
+            border-radius: 8px;
+            background: #111;
+            color: #ff4444;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background: #ff4444;
+            color: white;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 55px 20px 35px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            color: #f5c400;
+            letter-spacing: 3px;
+        }
+
+        .hero p {
+            color: #999;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .top-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px auto 35px;
+            flex-wrap: wrap;
+        }
+
+        .main-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #f5c400;
+            color: #111;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .main-button:hover {
+            opacity: 0.85;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+            padding-bottom: 50px;
+        }
+
+        .section-title {
+            margin-bottom: 25px;
+        }
+
+        .section-title h2 {
+            font-size: 24px;
+        }
+
+        .section-title .line {
+            height: 3px;
+            width: 60px;
+            background: #f5c400;
+            margin-top: 8px;
+        }
+
+        #products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 22px;
+        }
+
+        .product-card {
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 14px;
+            padding: 25px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: #f5c400;
+            box-shadow: 0 8px 30px rgba(245, 196, 0, 0.15);
+        }
+
+        .product-icon {
+            width: 65px;
+            height: 65px;
+            background: #f5c400;
+            color: #111;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .product-card h3 {
+            font-size: 21px;
+            margin-bottom: 12px;
+        }
+
+        .price {
+            color: #f5c400;
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .stock {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .stock strong {
+            color: white;
+        }
+
+        .available {
+            color: #00ff66 !important;
+        }
+
+        .low-stock {
+            color: #ff9900 !important;
+        }
+
+        .out-stock {
+            color: #ff3333 !important;
+        }
+
+        .buy-button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            background: #f5c400;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .buy-button:hover {
+            opacity: 0.85;
+        }
+
+        .buy-button:disabled {
+            background: #333;
+            color: #777;
+            cursor: not-allowed;
+        }
+
+        /* ================= PURCHASE HISTORY ================= */
+
+        .purchase-section {
+            margin-top: 50px;
+        }
+
+        .purchase-history {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .purchase-item {
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 10px;
+            padding: 15px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .purchase-name {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .purchase-date {
+            color: #777;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .purchase-price {
+            color: #ff5555;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .empty-history {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 10px;
+            text-align: center;
+            color: #777;
+            padding: 25px;
+        }
+
+        /* ================= MODAL ================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.80);
+            justify-content: center;
+            align-items: flex-start;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 430px;
+            background: #111;
+            border: 1px solid #f5c400;
+            border-radius: 14px;
+            padding: 25px;
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: 20px auto;
+        }
+
+        .modal-box h2 {
+            color: #f5c400;
+            margin-bottom: 20px;
+        }
+
+        .modal-box input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #080808;
+            color: white;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .money-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .money-buttons button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #f5c400;
+            color: #111;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* ================= PAYMENT ================= */
+
+        .payment-box {
+            display: none;
+        }
+
+        .payment-status {
+            background: #080808;
+            border: 1px solid #292929;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 15px;
+        }
+
+        .payment-status .label {
+            color: #999;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .transaction-id {
+            color: #f5c400;
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        .payment-amount {
+            font-size: 30px;
+            color: #f5c400;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .pending {
+            color: #ff9900;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #00ff66;
+            font-weight: bold;
+        }
+
+        .simulate-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #00c853;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .simulate-button:hover {
+            opacity: 0.85;
+        }
+
+        .simulate-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ================= TOPUP HISTORY ================= */
+
+        .history {
+            margin-top: 20px;
+            text-align: left;
+            border-top: 1px solid #292929;
+            padding-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .history h3 {
+            color: #f5c400;
+            margin-bottom: 12px;
+        }
+
+        .history-item {
+            background: #080808;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .history-item .amount {
+            color: #f5c400;
+            font-weight: bold;
+        }
+
+        .history-item .date {
+            color: #777;
+            margin-top: 4px;
+        }
+
+        /* ================= SCROLLBAR ================= */
+
+        .purchase-history::-webkit-scrollbar,
+        .history::-webkit-scrollbar,
+        .modal-box::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .purchase-history::-webkit-scrollbar-thumb,
+        .history::-webkit-scrollbar-thumb,
+        .modal-box::-webkit-scrollbar-thumb {
+            background: #f5c400;
+            border-radius: 10px;
+        }
+
+        .purchase-history::-webkit-scrollbar-track,
+        .history::-webkit-scrollbar-track,
+        .modal-box::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            border-top: 1px solid #222;
+            text-align: center;
+            padding: 25px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #999;
+            padding: 50px;
+            grid-column: 1 / -1;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 18px 5%;
+                align-items: flex-start;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .header-right {
+                gap: 8px;
+            }
+
+            .username {
+                font-size: 13px;
+            }
+
+            .status {
+                font-size: 12px;
+            }
+
+            .admin-secret {
+                font-size: 16px;
+            }
+
+            .logout-button {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
+
+            .hero {
+                padding-top: 40px;
+            }
+
+            .purchase-item {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .purchase-price {
+                font-size: 14px;
+            }
+
+        }
+
+    </style>
 
 </head>
 
@@ -569,40 +572,48 @@
 
 <header>
 
-
-<div class="logo">
-    VENDING MACHINE
-</div>
-
-<div class="header-right">
-
-    <div class="user-info">
-
-        <div class="username">
-            👤 <span id="username">กำลังโหลด...</span>
-        </div>
-
-        <div class="status">
-
-            💰 Wallet:
-
-            <span id="wallet">
-                กำลังโหลด...
-            </span>
-
-        </div>
-
+    <div class="logo">
+        VENDING MACHINE
     </div>
 
-    <button
-        class="logout-button"
-        onclick="logout()"
-    >
-        🚪 Logout
-    </button>
+    <div class="header-right">
 
-</div>
+        <div class="user-info">
 
+            <div class="username">
+                👤 <span id="username">กำลังโหลด...</span>
+            </div>
+
+            <div class="status">
+
+                💰 Wallet:
+
+                <span id="wallet">
+                    กำลังโหลด...
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- ================= ADMIN ลับ ================= -->
+
+        <a
+            href="/admin.html"
+            class="admin-secret"
+            title="Admin"
+        >
+            ⚙
+        </a>
+
+        <button
+            class="logout-button"
+            onclick="logout()"
+        >
+            🚪 Logout
+        </button>
+
+    </div>
 
 </header>
 
@@ -610,15 +621,13 @@
 
 <section class="hero">
 
+    <h1>
+        PRODUCTS
+    </h1>
 
-<h1>
-    PRODUCTS
-</h1>
-
-<p>
-    ตรวจสอบสินค้าและจำนวนสินค้าที่มีอยู่ในตู้
-</p>
-
+    <p>
+        ตรวจสอบสินค้าและจำนวนสินค้าที่มีอยู่ในตู้
+    </p>
 
 </section>
 
@@ -626,22 +635,12 @@
 
 <div class="top-buttons">
 
-
-<button
-    class="main-button"
-    onclick="openTopup()"
->
-    💰 เติมเงิน
-</button>
-
-
-<a
-    href="/admin.html"
-    class="main-button admin-button"
->
-    ⚙️ จัดการระบบ
-</a>
-
+    <button
+        class="main-button"
+        onclick="openTopup()"
+    >
+        💰 เติมเงิน
+    </button>
 
 </div>
 
@@ -649,55 +648,50 @@
 
 <main class="container">
 
-
-<div class="section-title">
-
-    <h2>
-        สินค้าทั้งหมด
-    </h2>
-
-    <div class="line"></div>
-
-</div>
-
-
-<div id="products">
-
-    <div class="loading">
-        กำลังโหลดสินค้า...
-    </div>
-
-</div>
-
-
-<!-- ================= PURCHASE HISTORY ================= -->
-
-<section class="purchase-section">
-
     <div class="section-title">
 
         <h2>
-            🧾 ประวัติการซื้อ
+            สินค้าทั้งหมด
         </h2>
 
         <div class="line"></div>
 
     </div>
 
-
-    <div
-        id="purchaseHistory"
-        class="purchase-history"
-    >
+    <div id="products">
 
         <div class="loading">
-            กำลังโหลดประวัติการซื้อ...
+            กำลังโหลดสินค้า...
         </div>
 
     </div>
 
-</section>
+    <!-- ================= PURCHASE HISTORY ================= -->
 
+    <section class="purchase-section">
+
+        <div class="section-title">
+
+            <h2>
+                🧾 ประวัติการซื้อ
+            </h2>
+
+            <div class="line"></div>
+
+        </div>
+
+        <div
+            id="purchaseHistory"
+            class="purchase-history"
+        >
+
+            <div class="loading">
+                กำลังโหลดประวัติการซื้อ...
+            </div>
+
+        </div>
+
+    </section>
 
 </main>
 
@@ -708,148 +702,138 @@
     class="modal"
 >
 
+    <div class="modal-box">
 
-<div class="modal-box">
+        <div id="topupSelect">
 
-    <div id="topupSelect">
+            <h2>
+                💰 เติมเงิน Wallet
+            </h2>
 
-        <h2>
-            💰 เติมเงิน Wallet
-        </h2>
+            <p style="color:#888; margin-bottom:20px;">
+                เลือกจำนวนเงินที่ต้องการเติม
+            </p>
 
-        <p style="color:#888; margin-bottom:20px;">
-            เลือกจำนวนเงินที่ต้องการเติม
-        </p>
+            <input
+                type="number"
+                id="topupAmount"
+                placeholder="จำนวนเงิน"
+                min="1"
+                step="1"
+            >
 
+            <div class="money-buttons">
 
-        <input
-            type="number"
-            id="topupAmount"
-            placeholder="จำนวนเงิน"
-            min="1"
-            step="1"
-        >
+                <button onclick="createTopup(10)">
+                    +10 บาท
+                </button>
 
+                <button onclick="createTopup(20)">
+                    +20 บาท
+                </button>
 
-        <div class="money-buttons">
+                <button onclick="createTopup(50)">
+                    +50 บาท
+                </button>
 
-            <button onclick="createTopup(10)">
-                +10 บาท
+                <button onclick="createTopup(100)">
+                    +100 บาท
+                </button>
+
+            </div>
+
+            <button
+                class="main-button"
+                style="width:100%; margin-top:10px;"
+                onclick="createCustomTopup()"
+            >
+                เติมจำนวนที่กำหนด
             </button>
 
-            <button onclick="createTopup(20)">
-                +20 บาท
-            </button>
-
-            <button onclick="createTopup(50)">
-                +50 บาท
-            </button>
-
-            <button onclick="createTopup(100)">
-                +100 บาท
+            <button
+                class="close-button"
+                onclick="closeTopup()"
+            >
+                ปิด
             </button>
 
         </div>
 
-
-        <button
-            class="main-button"
-            style="width:100%; margin-top:10px;"
-            onclick="createCustomTopup()"
+        <div
+            id="paymentBox"
+            class="payment-box"
         >
-            เติมจำนวนที่กำหนด
-        </button>
 
+            <h2>
+                💳 จำลองการชำระเงิน
+            </h2>
 
-        <button
-            class="close-button"
-            onclick="closeTopup()"
-        >
-            ปิด
-        </button>
+            <div class="payment-status">
 
-    </div>
+                <div class="label">
+                    หมายเลขรายการ
+                </div>
 
+                <div
+                    id="transactionId"
+                    class="transaction-id"
+                >
+                    -
+                </div>
 
-    <div
-        id="paymentBox"
-        class="payment-box"
-    >
+                <div
+                    class="label"
+                    style="margin-top:15px;"
+                >
+                    จำนวนเงิน
+                </div>
 
-        <h2>
-            💳 จำลองการชำระเงิน
-        </h2>
+                <div
+                    id="paymentAmount"
+                    class="payment-amount"
+                >
+                    0 บาท
+                </div>
 
+                <div
+                    id="paymentStatus"
+                    class="pending"
+                >
+                    ⏳ รอชำระเงิน
+                </div>
 
-        <div class="payment-status">
-
-            <div class="label">
-                หมายเลขรายการ
             </div>
 
-            <div
-                id="transactionId"
-                class="transaction-id"
+            <button
+                id="simulateButton"
+                class="simulate-button"
+                onclick="simulatePayment()"
             >
-                -
-            </div>
+                ✓ จำลองการชำระเงิน
+            </button>
 
-
-            <div class="label" style="margin-top:15px;">
-                จำนวนเงิน
-            </div>
-
-            <div
-                id="paymentAmount"
-                class="payment-amount"
+            <button
+                class="close-button"
+                onclick="closeTopup()"
             >
-                0 บาท
-            </div>
+                ยกเลิก
+            </button>
 
+        </div>
 
-            <div
-                id="paymentStatus"
-                class="pending"
-            >
-                ⏳ รอชำระเงิน
+        <div class="history">
+
+            <h3>
+                📜 ประวัติเติมเงิน
+            </h3>
+
+            <div id="topupHistory">
+                กำลังโหลด...
             </div>
 
         </div>
 
-
-        <button
-            id="simulateButton"
-            class="simulate-button"
-            onclick="simulatePayment()"
-        >
-            ✓ จำลองการชำระเงิน
-        </button>
-
-
-        <button
-            class="close-button"
-            onclick="closeTopup()"
-        >
-            ยกเลิก
-        </button>
-
     </div>
-
-
-    <div class="history">
-
-        <h3>
-            📜 ประวัติเติมเงิน
-        </h3>
-
-        <div id="topupHistory">
-            กำลังโหลด...
-        </div>
-
-    </div>
-
-</div>
-
 
 </div>
 
@@ -857,9 +841,7 @@
 
 <footer>
 
-
-VENDING MACHINE © 2026
-
+    VENDING MACHINE © 2026
 
 </footer>
 
@@ -961,7 +943,9 @@ function loadUsername() {
 
     if (username) {
 
-        document.getElementById("username").innerText =
+        document.getElementById(
+            "username"
+        ).innerText =
             username;
 
     }
@@ -977,45 +961,56 @@ function buyProduct(id) {
 
     if (!checkLogin()) return;
 
-    // กันกดซื้อซ้ำ
     if (buyingProduct) {
 
-        alert("กำลังดำเนินการซื้อ กรุณารอสักครู่");
+        alert(
+            "กำลังดำเนินการซื้อ กรุณารอสักครู่"
+        );
 
         return;
+
     }
 
     buyingProduct = true;
 
-    // ปิดปุ่มซื้อทั้งหมด
     document
         .querySelectorAll(".buy-button")
         .forEach(button => {
 
             button.disabled = true;
-            button.innerText = "กำลังจ่ายสินค้า...";
+            button.innerText =
+                "กำลังจ่ายสินค้า...";
 
         });
 
+    fetch(
+        "/buy/" + id,
+        {
 
-    fetch("/buy/" + id, {
+            method: "POST",
 
-        method: "POST",
+            headers: authHeaders()
 
-        headers: authHeaders()
-
-    })
+        }
+    )
 
     .then(response => {
 
         if (response.status === 401) {
 
-            localStorage.removeItem("vendingToken");
-            localStorage.removeItem("vendingUsername");
+            localStorage.removeItem(
+                "vendingToken"
+            );
 
-            window.location.href = "/login.html";
+            localStorage.removeItem(
+                "vendingUsername"
+            );
+
+            window.location.href =
+                "/login.html";
 
             return null;
+
         }
 
         return response.json();
@@ -1026,11 +1021,10 @@ function buyProduct(id) {
 
         if (!data) return;
 
-        // =========================================
-        // สร้าง Order สำเร็จ
-        // =========================================
-
-        if (data.success && data.orderId) {
+        if (
+            data.success &&
+            data.orderId
+        ) {
 
             alert(
                 "กำลังจ่ายสินค้า...\n\n" +
@@ -1041,14 +1035,18 @@ function buyProduct(id) {
                 " บาท"
             );
 
-            // รอ ESP32 ทำงาน
-            waitForOrder(data.orderId);
+            waitForOrder(
+                data.orderId
+            );
 
         }
 
         else {
 
-            alert(data.message || "ซื้อสินค้าไม่สำเร็จ");
+            alert(
+                data.message ||
+                "ซื้อสินค้าไม่สำเร็จ"
+            );
 
             buyingProduct = false;
 
@@ -1075,130 +1073,152 @@ function buyProduct(id) {
 
 }
 
+
+// =========================
+// รอผล Order
+// =========================
+
 function waitForOrder(orderId) {
 
     let attempts = 0;
 
     const maxAttempts = 40;
 
-    const checkOrder = setInterval(() => {
+    const checkOrder =
+        setInterval(() => {
 
-        attempts++;
+            attempts++;
 
-        fetch("/order/" + orderId, {
+            fetch(
+                "/order/" + orderId,
+                {
+                    headers:
+                        authHeaders()
+                }
+            )
 
-            headers: authHeaders()
+            .then(response => {
 
-        })
+                if (
+                    response.status === 401
+                ) {
 
-        .then(response => {
+                    clearInterval(
+                        checkOrder
+                    );
 
-            if (response.status === 401) {
+                    localStorage.removeItem(
+                        "vendingToken"
+                    );
 
-                clearInterval(checkOrder);
+                    localStorage.removeItem(
+                        "vendingUsername"
+                    );
 
-                localStorage.removeItem("vendingToken");
-                localStorage.removeItem("vendingUsername");
+                    window.location.href =
+                        "/login.html";
 
-                window.location.href = "/login.html";
+                    return null;
 
-                return null;
-            }
+                }
 
-            return response.json();
+                return response.json();
 
-        })
+            })
 
-        .then(data => {
+            .then(data => {
 
-            if (!data) return;
+                if (!data) return;
 
-            console.log(
-                "Order Status:",
-                data.status
-            );
+                console.log(
+                    "Order Status:",
+                    data.status
+                );
 
-            // =========================================
-            // จ่ายสำเร็จ
-            // =========================================
+                if (
+                    data.status ===
+                    "SUCCESS"
+                ) {
 
-            if (data.status === "SUCCESS") {
+                    clearInterval(
+                        checkOrder
+                    );
 
-                clearInterval(checkOrder);
+                    alert(
+                        "จ่ายสินค้าสำเร็จ! ✅\n\n" +
+                        "สินค้า: " +
+                        data.product +
+                        "\nราคา: " +
+                        data.price +
+                        " บาท"
+                    );
+
+                    buyingProduct = false;
+
+                    loadProducts();
+                    loadWallet();
+                    loadPurchaseHistory();
+
+                }
+
+                else if (
+                    data.status ===
+                    "FAILED"
+                ) {
+
+                    clearInterval(
+                        checkOrder
+                    );
+
+                    alert(
+                        "จ่ายสินค้าไม่สำเร็จ ❌\n\n" +
+                        "ไม่มีการหักเงิน"
+                    );
+
+                    buyingProduct = false;
+
+                    loadProducts();
+                    loadWallet();
+                    loadPurchaseHistory();
+
+                }
+
+            })
+
+            .catch(error => {
+
+                console.log(
+                    "ตรวจสอบ Order Error:",
+                    error
+                );
+
+            });
+
+            if (
+                attempts >=
+                maxAttempts
+            ) {
+
+                clearInterval(
+                    checkOrder
+                );
 
                 alert(
-                    "จ่ายสินค้าสำเร็จ! ✅\n\n" +
-                    "สินค้า: " +
-                    data.product +
-                    "\nราคา: " +
-                    data.price +
-                    " บาท"
+                    "ยังไม่ได้รับผลจากตู้\n\n" +
+                    "กรุณาตรวจสอบตู้หรือ ESP32"
                 );
 
                 buyingProduct = false;
 
                 loadProducts();
                 loadWallet();
-                loadPurchaseHistory();
 
             }
 
-            // =========================================
-            // จ่ายไม่สำเร็จ
-            // =========================================
-
-            else if (data.status === "FAILED") {
-
-                clearInterval(checkOrder);
-
-                alert(
-                    "จ่ายสินค้าไม่สำเร็จ ❌\n\n" +
-                    "ไม่มีการหักเงิน"
-                );
-
-                buyingProduct = false;
-
-                loadProducts();
-                loadWallet();
-                loadPurchaseHistory();
-
-            }
-
-        })
-
-        .catch(error => {
-
-            console.log(
-                "ตรวจสอบ Order Error:",
-                error
-            );
-
-        });
-
-
-        // =========================================
-        // ครบ 40 วินาที
-        // =========================================
-
-        if (attempts >= maxAttempts) {
-
-            clearInterval(checkOrder);
-
-            alert(
-                "ยังไม่ได้รับผลจากตู้\n\n" +
-                "กรุณาตรวจสอบตู้หรือ ESP32"
-            );
-
-            buyingProduct = false;
-
-            loadProducts();
-            loadWallet();
-
-        }
-
-    }, 1000);
+        }, 1000);
 
 }
+
 
 // =========================
 // โหลด Wallet
@@ -1208,16 +1228,20 @@ function loadWallet() {
 
     if (!checkLogin()) return;
 
-    fetch("/wallet", {
-
-        headers:
-            authHeaders()
-
-    })
+    fetch(
+        "/wallet",
+        {
+            headers:
+                authHeaders()
+        }
+    )
 
     .then(response => {
 
-        if (response.status === 401) {
+        if (
+            response.status ===
+            401
+        ) {
 
             localStorage.removeItem(
                 "vendingToken"
@@ -1253,7 +1277,8 @@ function loadWallet() {
         document.getElementById(
             "wallet"
         ).innerText =
-            data.balance + " บาท";
+            data.balance +
+            " บาท";
 
     })
 
@@ -1279,15 +1304,18 @@ function openTopup() {
 
     document.getElementById(
         "topupModal"
-    ).style.display = "flex";
+    ).style.display =
+        "flex";
 
     document.getElementById(
         "topupSelect"
-    ).style.display = "block";
+    ).style.display =
+        "block";
 
     document.getElementById(
         "paymentBox"
-    ).style.display = "none";
+    ).style.display =
+        "none";
 
     loadTopupHistory();
 
@@ -1302,9 +1330,11 @@ function closeTopup() {
 
     document.getElementById(
         "topupModal"
-    ).style.display = "none";
+    ).style.display =
+        "none";
 
-    currentTransactionId = null;
+    currentTransactionId =
+        null;
 
 }
 
@@ -1315,7 +1345,9 @@ function closeTopup() {
 
 function createTopup(amount) {
 
-    createTopupRequest(amount);
+    createTopupRequest(
+        amount
+    );
 
 }
 
@@ -1342,7 +1374,9 @@ function createCustomTopup() {
 
     }
 
-    createTopupRequest(amount);
+    createTopupRequest(
+        amount
+    );
 
 }
 
@@ -1380,7 +1414,9 @@ function createTopupRequest(amount) {
 
         if (!data.success) {
 
-            alert(data.message);
+            alert(
+                data.message
+            );
 
             return;
 
@@ -1397,7 +1433,8 @@ function createTopupRequest(amount) {
         document.getElementById(
             "paymentAmount"
         ).innerText =
-            data.amount + " บาท";
+            data.amount +
+            " บาท";
 
         document.getElementById(
             "paymentStatus"
@@ -1470,7 +1507,6 @@ function simulatePayment() {
     button.innerText =
         "กำลังตรวจสอบ...";
 
-
     fetch(
 
         "/wallet/topup/pay-simulate/" +
@@ -1495,12 +1531,15 @@ function simulatePayment() {
 
         if (!data.success) {
 
-            button.disabled = false;
+            button.disabled =
+                false;
 
             button.innerText =
                 "✓ จำลองการชำระเงิน";
 
-            alert(data.message);
+            alert(
+                data.message
+            );
 
             return;
 
@@ -1522,7 +1561,6 @@ function simulatePayment() {
         loadWallet();
 
         loadTopupHistory();
-
 
         setTimeout(() => {
 
@@ -1548,7 +1586,8 @@ function simulatePayment() {
 
         console.log(error);
 
-        button.disabled = false;
+        button.disabled =
+            false;
 
         button.innerText =
             "✓ จำลองการชำระเงิน";
@@ -1621,8 +1660,10 @@ function loadTopupHistory() {
             let statusClass =
                 "pending";
 
-
-            if (item.status === "SUCCESS") {
+            if (
+                item.status ===
+                "SUCCESS"
+            ) {
 
                 statusText =
                     "สำเร็จ";
@@ -1633,14 +1674,14 @@ function loadTopupHistory() {
             }
 
             else if (
-                item.status === "CANCELLED"
+                item.status ===
+                "CANCELLED"
             ) {
 
                 statusText =
                     "ยกเลิก";
 
             }
-
 
             const date =
                 item.created_at
@@ -1650,7 +1691,6 @@ function loadTopupHistory() {
                         "th-TH"
                     )
                     : "-";
-
 
             box.innerHTML += `
 
@@ -1762,7 +1802,6 @@ function loadPurchaseHistory() {
                     )
                     : "-";
 
-
             box.innerHTML += `
 
                 <div class="purchase-item">
@@ -1836,11 +1875,9 @@ function loadProducts() {
 
         box.innerHTML = "";
 
-
         products.forEach(product => {
 
             let icon = "📦";
-
 
             if (
                 product.name.includes("น้ำ")
@@ -1866,15 +1903,15 @@ function loadProducts() {
 
             }
 
-
             let stockClass =
                 "available";
 
             let stockText =
                 "มีสินค้า";
 
-
-            if (product.stock <= 0) {
+            if (
+                product.stock <= 0
+            ) {
 
                 stockClass =
                     "out-stock";
@@ -1884,7 +1921,9 @@ function loadProducts() {
 
             }
 
-            else if (product.stock <= 3) {
+            else if (
+                product.stock <= 3
+            ) {
 
                 stockClass =
                     "low-stock";
@@ -1893,7 +1932,6 @@ function loadProducts() {
                     "สินค้าใกล้หมด";
 
             }
-
 
             box.innerHTML += `
 
@@ -1947,7 +1985,6 @@ function loadProducts() {
 
         });
 
-
         if (products.length === 0) {
 
             box.innerHTML = `
@@ -1988,7 +2025,6 @@ if (checkLogin()) {
 
     loadPurchaseHistory();
 
-
     setInterval(
         loadProducts,
         1000
@@ -2009,4 +2045,5 @@ if (checkLogin()) {
 </script>
 
 </body>
+
 </html>
