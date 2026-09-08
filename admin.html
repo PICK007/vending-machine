@@ -1,18 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Admin - Vending Machine</title>
 
     <style>
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -26,9 +20,7 @@
             min-height: 100vh;
         }
 
-        /* =========================
-           LOGIN
-        ========================= */
+        /* ================= LOGIN ================= */
 
         .login-page {
             min-height: 100vh;
@@ -46,7 +38,6 @@
             border-radius: 18px;
             padding: 35px;
             text-align: center;
-            box-shadow: 0 0 30px rgba(255, 193, 7, 0.08);
         }
 
         .logo {
@@ -55,77 +46,63 @@
         }
 
         .login-box h1 {
-            color: #f5b800;
+            color: #f5c400;
             margin-bottom: 8px;
         }
 
         .login-box p {
-            color: #999;
+            color: #888;
             margin-bottom: 25px;
         }
 
         .password-input {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             background: #080808;
             color: white;
             border: 1px solid #444;
-            border-radius: 10px;
-            font-size: 17px;
-            outline: none;
+            border-radius: 9px;
+            font-size: 16px;
             margin-bottom: 15px;
             text-align: center;
-        }
-
-        .password-input:focus {
-            border-color: #f5b800;
         }
 
         .login-button {
             width: 100%;
             padding: 14px;
             border: none;
-            border-radius: 10px;
-            background: #f5b800;
+            border-radius: 9px;
+            background: #f5c400;
             color: #000;
-            font-size: 17px;
             font-weight: bold;
+            font-size: 16px;
             cursor: pointer;
-        }
-
-        .login-button:hover {
-            background: #ffc928;
         }
 
         .login-message {
             margin-top: 15px;
-            min-height: 22px;
             color: #ff5555;
+            min-height: 20px;
         }
 
-
-        /* =========================
-           ADMIN PANEL
-        ========================= */
+        /* ================= ADMIN ================= */
 
         #adminPanel {
             display: none;
         }
 
         header {
-            height: 70px;
             background: #0b0b0b;
             border-bottom: 1px solid #292929;
-
+            padding: 18px 5%;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-
-            padding: 0 25px;
+            align-items: center;
+            gap: 15px;
         }
 
         .header-title {
-            color: #f5b800;
+            color: #f5c400;
             font-size: 22px;
             font-weight: bold;
         }
@@ -135,54 +112,44 @@
             gap: 10px;
         }
 
-        .header-button {
-            text-decoration: none;
-            border: 1px solid #555;
-            color: white;
-            background: #151515;
-
+        .header-button,
+        .logout-button {
             padding: 9px 14px;
             border-radius: 8px;
-
             cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
         }
 
-        .header-button:hover {
-            border-color: #f5b800;
+        .header-button {
+            background: #151515;
+            border: 1px solid #444;
+            color: white;
         }
 
         .logout-button {
-            border: none;
             background: #8b1e1e;
+            border: none;
             color: white;
-            padding: 10px 14px;
-            border-radius: 8px;
-            cursor: pointer;
         }
 
-        .logout-button:hover {
-            background: #b52a2a;
-        }
-
-
-        /* =========================
-           CONTENT
-        ========================= */
+        /* ================= CONTAINER ================= */
 
         .container {
-            max-width: 1100px;
+            width: 90%;
+            max-width: 1200px;
             margin: auto;
-            padding: 35px 20px;
+            padding: 35px 0 60px;
         }
 
         .hero {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
         .hero h1 {
+            color: #f5c400;
             font-size: 36px;
-            color: #f5b800;
             margin-bottom: 8px;
         }
 
@@ -190,128 +157,219 @@
             color: #888;
         }
 
+        /* ================= STATUS ================= */
 
-        /* =========================
-           PRODUCTS
-        ========================= */
+        .status-bar {
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .online {
+            color: #00ff66;
+            font-weight: bold;
+        }
+
+        .offline {
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        /* ================= STATS ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 14px;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .stat-title {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            color: #f5c400;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* ================= SECTION ================= */
+
+        .section {
+            margin-top: 35px;
+        }
+
+        .section-title {
+            margin-bottom: 18px;
+        }
+
+        .section-title h2 {
+            font-size: 23px;
+        }
+
+        .line {
+            width: 55px;
+            height: 3px;
+            background: #f5c400;
+            margin-top: 7px;
+        }
+
+        /* ================= PRODUCTS ================= */
 
         .products {
             display: grid;
-            grid-template-columns:
-                repeat(auto-fit, minmax(230px, 1fr));
-
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px;
         }
 
         .product-card {
             background: #111;
             border: 1px solid #292929;
-            border-radius: 15px;
+            border-radius: 14px;
             padding: 22px;
         }
 
-        .product-card h2 {
-            color: white;
+        .product-card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .product-price {
+            color: #f5c400;
+            font-size: 20px;
+            font-weight: bold;
             margin-bottom: 10px;
         }
 
-        .stock {
-            font-size: 18px;
-            color: #f5b800;
+        .product-stock {
+            color: #aaa;
             margin-bottom: 18px;
         }
 
         .stock-number {
-            font-size: 30px;
+            color: white;
             font-weight: bold;
         }
-
-
-        /* =========================
-           BUTTONS
-        ========================= */
 
         .stock-buttons {
             display: grid;
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 8px;
-            margin-bottom: 12px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+            margin-bottom: 10px;
         }
 
-        .stock-button {
-            border: none;
-            border-radius: 8px;
-
-            padding: 12px 5px;
-
-            background: #f5b800;
-            color: #000;
-
-            font-weight: bold;
+        button {
             cursor: pointer;
         }
 
-        .stock-button:hover {
-            background: #ffd34d;
+        .stock-button {
+            padding: 10px 5px;
+            border: none;
+            border-radius: 7px;
+            background: #f5c400;
+            color: #000;
+            font-weight: bold;
         }
-
 
         .custom-area {
             display: flex;
-            gap: 8px;
+            gap: 7px;
         }
 
         .custom-input {
             width: 100%;
-            min-width: 0;
-
             background: #080808;
             border: 1px solid #444;
+            border-radius: 7px;
+            padding: 10px;
             color: white;
-
-            border-radius: 8px;
-            padding: 12px;
         }
 
         .custom-button {
-            white-space: nowrap;
-
             background: #222;
             color: white;
-
             border: 1px solid #555;
-            border-radius: 8px;
-
+            border-radius: 7px;
             padding: 0 15px;
-
-            cursor: pointer;
         }
 
-        .custom-button:hover {
-            border-color: #f5b800;
+        /* ================= TABLE ================= */
+
+        .table-box {
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 14px;
+            overflow-x: auto;
         }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
 
-        /* =========================
-           STATUS
-        ========================= */
+        th {
+            color: #f5c400;
+            background: #151515;
+            padding: 14px;
+            text-align: left;
+        }
 
-        .status {
+        td {
+            padding: 13px 14px;
+            border-top: 1px solid #292929;
+            color: #ccc;
+        }
+
+        .empty {
             text-align: center;
-            margin-top: 25px;
-
-            min-height: 25px;
-
-            color: #f5b800;
+            color: #777;
+            padding: 30px;
         }
 
+        /* ================= REFRESH ================= */
 
-        @media (max-width: 600px) {
+        .refresh-button {
+            background: #222;
+            color: #f5c400;
+            border: 1px solid #f5c400;
+            border-radius: 8px;
+            padding: 9px 15px;
+            font-weight: bold;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 700px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
 
             header {
-                padding: 0 12px;
+                padding: 15px;
             }
 
             .header-title {
@@ -326,33 +384,27 @@
                 font-size: 28px;
             }
 
+            .status-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
-
     </style>
-
 </head>
-
 
 <body>
 
-
-<!-- ==================================================
-     LOGIN PAGE
-================================================== -->
+<!-- ================= LOGIN ================= -->
 
 <div id="loginPage" class="login-page">
 
     <div class="login-box">
 
-        <div class="logo">
-            ⚙️
-        </div>
+        <div class="logo">⚙️</div>
 
         <h1>ADMIN LOGIN</h1>
 
-        <p>
-            กรุณาใส่รหัสผ่านเพื่อจัดการระบบ
-        </p>
+        <p>เข้าสู่ระบบจัดการ Vending Machine</p>
 
         <input
             id="password"
@@ -369,20 +421,14 @@
             เข้าสู่ระบบ
         </button>
 
-        <div
-            id="loginMessage"
-            class="login-message"
-        ></div>
+        <div id="loginMessage" class="login-message"></div>
 
     </div>
 
 </div>
 
 
-
-<!-- ==================================================
-     ADMIN PANEL
-================================================== -->
+<!-- ================= ADMIN PANEL ================= -->
 
 <div id="adminPanel">
 
@@ -394,10 +440,7 @@
 
         <div class="header-buttons">
 
-            <a
-                href="/"
-                class="header-button"
-            >
+            <a href="/" class="header-button">
                 🏠 หน้าร้าน
             </a>
 
@@ -405,7 +448,7 @@
                 class="logout-button"
                 onclick="logout()"
             >
-                ออกจากระบบ
+                🚪 Logout
             </button>
 
         </div>
@@ -417,41 +460,221 @@
 
         <div class="hero">
 
-            <h1>
-                STOCK MANAGEMENT
-            </h1>
+            <h1>VENDING MACHINE ADMIN</h1>
 
             <p>
-                จัดการจำนวนสินค้าภายในตู้
+                ระบบจัดการตู้ขายสินค้า
             </p>
 
         </div>
 
 
-        <div
-            id="products"
-            class="products"
-        ></div>
+        <!-- ================= ESP32 STATUS ================= -->
+
+        <div class="status-bar">
+
+            <div>
+                🟢 ESP32 STATUS:
+                <span id="espStatus">
+                    กำลังตรวจสอบ...
+                </span>
+            </div>
+
+            <button
+                class="refresh-button"
+                onclick="refreshAll()"
+            >
+                🔄 รีเฟรช
+            </button>
+
+        </div>
 
 
-        <div
-            id="status"
-            class="status"
-        ></div>
+        <!-- ================= STATS ================= -->
+
+        <div class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">💰</div>
+
+                <div class="stat-title">
+                    ยอดขายรวม
+                </div>
+
+                <div
+                    id="totalSales"
+                    class="stat-value"
+                >
+                    0 บาท
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">🛒</div>
+
+                <div class="stat-title">
+                    จำนวนสินค้าที่ขาย
+                </div>
+
+                <div
+                    id="totalOrders"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">👥</div>
+
+                <div class="stat-title">
+                    จำนวนผู้ใช้
+                </div>
+
+                <div
+                    id="totalUsers"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= PRODUCTS ================= -->
+
+        <section class="section">
+
+            <div class="section-title">
+
+                <h2>📦 จัดการสินค้า</h2>
+
+                <div class="line"></div>
+
+            </div>
+
+            <div
+                id="products"
+                class="products"
+            >
+                <div class="empty">
+                    กำลังโหลดสินค้า...
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ================= PURCHASE HISTORY ================= -->
+
+        <section class="section">
+
+            <div class="section-title">
+
+                <h2>🧾 ประวัติการขาย</h2>
+
+                <div class="line"></div>
+
+            </div>
+
+            <div class="table-box">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>ผู้ซื้อ</th>
+                            <th>สินค้า</th>
+                            <th>ราคา</th>
+                            <th>เวลา</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="purchaseHistory">
+
+                        <tr>
+                            <td
+                                colspan="4"
+                                class="empty"
+                            >
+                                กำลังโหลด...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= USERS ================= -->
+
+        <section class="section">
+
+            <div class="section-title">
+
+                <h2>👥 ผู้ใช้งาน</h2>
+
+                <div class="line"></div>
+
+            </div>
+
+            <div class="table-box">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Wallet</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="users">
+
+                        <tr>
+                            <td
+                                colspan="3"
+                                class="empty"
+                            >
+                                กำลังโหลด...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
 
     </main>
 
 </div>
 
 
-
 <script>
 
-// ==================================================
-// ADMIN TOKEN
-// ==================================================
-
 let adminToken = null;
+
 
 // ==================================================
 // LOGIN
@@ -465,7 +688,6 @@ async function login() {
     const message =
         document.getElementById("loginMessage");
 
-
     if (!password) {
 
         message.textContent =
@@ -473,7 +695,6 @@ async function login() {
 
         return;
     }
-
 
     try {
 
@@ -492,10 +713,8 @@ async function login() {
 
             });
 
-
         const data =
             await response.json();
-
 
         if (!response.ok || !data.success) {
 
@@ -506,16 +725,9 @@ async function login() {
             return;
         }
 
-
-        // เก็บ Token
         adminToken = data.token;
 
-        
-
-
-        // แสดง Admin Panel
         showAdminPanel();
-
 
     }
     catch (error) {
@@ -531,7 +743,7 @@ async function login() {
 
 
 // ==================================================
-// แสดง ADMIN PANEL
+// SHOW ADMIN
 // ==================================================
 
 function showAdminPanel() {
@@ -540,25 +752,51 @@ function showAdminPanel() {
         "loginPage"
     ).style.display = "none";
 
-
     document.getElementById(
         "adminPanel"
     ).style.display = "block";
 
-
-    loadProducts();
+    refreshAll();
 
 }
 
 
 // ==================================================
-// ตรวจ Token ตอนเปิดหน้า
+// AUTH HEADER
 // ==================================================
 
+function adminHeaders() {
+
+    return {
+
+        "Content-Type":
+            "application/json",
+
+        "x-admin-token":
+            adminToken
+
+    };
+
+}
 
 
 // ==================================================
-// โหลดสินค้า
+// REFRESH ALL
+// ==================================================
+
+function refreshAll() {
+
+    loadProducts();
+    loadESP32Status();
+    loadSales();
+    loadPurchaseHistory();
+    loadUsers();
+
+}
+
+
+// ==================================================
+// PRODUCTS
 // ==================================================
 
 async function loadProducts() {
@@ -571,13 +809,21 @@ async function loadProducts() {
         const products =
             await response.json();
 
-
         const container =
             document.getElementById("products");
 
-
         container.innerHTML = "";
 
+        if (!Array.isArray(products) ||
+            products.length === 0) {
+
+            container.innerHTML =
+                `<div class="empty">
+                    ยังไม่มีสินค้า
+                </div>`;
+
+            return;
+        }
 
         products.forEach(product => {
 
@@ -587,25 +833,27 @@ async function loadProducts() {
             card.className =
                 "product-card";
 
-
             card.innerHTML = `
 
-                <h2>
+                <h3>
                     ${product.name}
-                </h2>
+                </h3>
 
-                <div class="stock">
-
-                    Stock
-
-                    <div class="stock-number">
-
-                        ${product.stock}
-
-                    </div>
-
+                <div class="product-price">
+                    ${product.price} บาท
                 </div>
 
+                <div class="product-stock">
+
+                    Stock:
+
+                    <span class="stock-number">
+                        ${product.stock}
+                    </span>
+
+                    ชิ้น
+
+                </div>
 
                 <div class="stock-buttons">
 
@@ -632,7 +880,6 @@ async function loadProducts() {
 
                 </div>
 
-
                 <div class="custom-area">
 
                     <input
@@ -654,7 +901,6 @@ async function loadProducts() {
 
             `;
 
-
             container.appendChild(card);
 
         });
@@ -662,12 +908,10 @@ async function loadProducts() {
     }
     catch (error) {
 
-        console.error(error);
-
-        document.getElementById(
-            "status"
-        ).textContent =
-            "โหลดสินค้าไม่สำเร็จ";
+        console.error(
+            "โหลดสินค้าไม่ได้:",
+            error
+        );
 
     }
 
@@ -675,19 +919,17 @@ async function loadProducts() {
 
 
 // ==================================================
-// เพิ่ม Stock
+// ADD STOCK
 // ==================================================
 
 async function addStock(id, amount) {
 
     if (!adminToken) {
 
-        alert("กรุณา Login Admin ก่อน");
+        alert("กรุณา Login Admin");
 
         return;
-
     }
-
 
     try {
 
@@ -698,56 +940,40 @@ async function addStock(id, amount) {
 
                     method: "POST",
 
-                    headers: {
+                    headers:
+                        adminHeaders(),
 
-                        "Content-Type":
-                            "application/json",
-
-                        "x-admin-token":
-                            adminToken
-
-                    },
-
-                    body: JSON.stringify({
-                        amount: amount
-                    })
+                    body:
+                        JSON.stringify({
+                            amount: amount
+                        })
 
                 }
             );
 
-
         const data =
             await response.json();
 
-
-        // Token หมดอายุ / ไม่มีสิทธิ์
         if (response.status === 401) {
 
             alert(
-                "ไม่มีสิทธิ์ หรือ Session หมดอายุ"
+                "Session Admin หมดอายุ"
             );
 
             logout();
 
             return;
-
         }
-
 
         if (!data.success) {
 
-            alert(data.message);
+            alert(
+                data.message ||
+                "เพิ่ม Stock ไม่สำเร็จ"
+            );
 
             return;
-
         }
-
-
-        document.getElementById(
-            "status"
-        ).textContent =
-            `เพิ่ม Stock +${amount} สำเร็จ`;
-
 
         loadProducts();
 
@@ -766,7 +992,7 @@ async function addStock(id, amount) {
 
 
 // ==================================================
-// เพิ่ม Stock แบบกำหนดเอง
+// CUSTOM STOCK
 // ==================================================
 
 function addCustomStock(id) {
@@ -776,26 +1002,315 @@ function addCustomStock(id) {
             `custom-${id}`
         );
 
-
     const amount =
         Number(input.value);
 
-
-    if (!amount || amount <= 0) {
+    if (!Number.isInteger(amount) ||
+        amount <= 0) {
 
         alert(
-            "กรุณาใส่จำนวน Stock"
+            "กรุณาใส่จำนวนเป็นจำนวนเต็ม"
         );
 
         return;
-
     }
-
 
     addStock(id, amount);
 
-
     input.value = "";
+
+}
+
+
+// ==================================================
+// ESP32 STATUS
+// ==================================================
+
+async function loadESP32Status() {
+
+    const element =
+        document.getElementById(
+            "espStatus"
+        );
+
+    try {
+
+        const response =
+            await fetch("/esp32/status");
+
+        const data =
+            await response.json();
+
+        if (data.online) {
+
+            element.textContent =
+                "ONLINE";
+
+            element.className =
+                "online";
+
+        }
+        else {
+
+            element.textContent =
+                "OFFLINE";
+
+            element.className =
+                "offline";
+
+        }
+
+    }
+    catch (error) {
+
+        element.textContent =
+            "OFFLINE";
+
+        element.className =
+            "offline";
+
+    }
+
+}
+
+
+// ==================================================
+// SALES
+// ==================================================
+
+async function loadSales() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/admin/sales",
+                {
+                    headers:
+                        adminHeaders()
+                }
+            );
+
+        if (!response.ok) return;
+
+        const data =
+            await response.json();
+
+        if (data.totalSales !== undefined) {
+
+            document.getElementById(
+                "totalSales"
+            ).textContent =
+                Number(
+                    data.totalSales
+                ).toFixed(2) + " บาท";
+
+        }
+
+        if (data.totalOrders !== undefined) {
+
+            document.getElementById(
+                "totalOrders"
+            ).textContent =
+                data.totalOrders;
+
+        }
+
+    }
+    catch (error) {
+
+        console.log(
+            "โหลด Sales ไม่ได้:",
+            error
+        );
+
+    }
+
+}
+
+
+// ==================================================
+// PURCHASE HISTORY
+// ==================================================
+
+async function loadPurchaseHistory() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/admin/purchases",
+                {
+                    headers:
+                        adminHeaders()
+                }
+            );
+
+        if (!response.ok) return;
+
+        const data =
+            await response.json();
+
+        const tbody =
+            document.getElementById(
+                "purchaseHistory"
+            );
+
+        tbody.innerHTML = "";
+
+        if (!Array.isArray(data) ||
+            data.length === 0) {
+
+            tbody.innerHTML = `
+                <tr>
+                    <td
+                        colspan="4"
+                        class="empty"
+                    >
+                        ยังไม่มีประวัติการขาย
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        data.forEach(item => {
+
+            const date =
+                item.created_at
+                    ? new Date(
+                        item.created_at
+                    ).toLocaleString("th-TH")
+                    : "-";
+
+            tbody.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${item.username || "-"}
+                    </td>
+
+                    <td>
+                        ${item.product_name || "-"}
+                    </td>
+
+                    <td>
+                        ${Number(
+                            item.price || 0
+                        ).toFixed(2)} บาท
+                    </td>
+
+                    <td>
+                        ${date}
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+    }
+    catch (error) {
+
+        console.log(
+            "โหลดประวัติไม่ได้:",
+            error
+        );
+
+    }
+
+}
+
+
+// ==================================================
+// USERS
+// ==================================================
+
+async function loadUsers() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/admin/users",
+                {
+                    headers:
+                        adminHeaders()
+                }
+            );
+
+        if (!response.ok) return;
+
+        const data =
+            await response.json();
+
+        const tbody =
+            document.getElementById(
+                "users"
+            );
+
+        tbody.innerHTML = "";
+
+        if (!Array.isArray(data) ||
+            data.length === 0) {
+
+            tbody.innerHTML = `
+                <tr>
+                    <td
+                        colspan="3"
+                        class="empty"
+                    >
+                        ยังไม่มีผู้ใช้งาน
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        document.getElementById(
+            "totalUsers"
+        ).textContent =
+            data.length;
+
+        data.forEach(user => {
+
+            tbody.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${user.id || "-"}
+                    </td>
+
+                    <td>
+                        ${user.username || "-"}
+                    </td>
+
+                    <td>
+                        ${Number(
+                            user.balance || 0
+                        ).toFixed(2)} บาท
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+    }
+    catch (error) {
+
+        console.log(
+            "โหลด Users ไม่ได้:",
+            error
+        );
+
+    }
 
 }
 
@@ -816,12 +1331,8 @@ async function logout() {
 
                     method: "POST",
 
-                    headers: {
-
-                        "x-admin-token":
-                            adminToken
-
-                    }
+                    headers:
+                        adminHeaders()
 
                 }
             );
@@ -835,21 +1346,15 @@ async function logout() {
 
     }
 
-
     adminToken = null;
-
-   
-
 
     document.getElementById(
         "adminPanel"
     ).style.display = "none";
 
-
     document.getElementById(
         "loginPage"
     ).style.display = "flex";
-
 
     document.getElementById(
         "password"
@@ -859,7 +1364,7 @@ async function logout() {
 
 
 // ==================================================
-// กด Enter เพื่อ Login
+// ENTER LOGIN
 // ==================================================
 
 document.getElementById(
@@ -879,23 +1384,20 @@ document.getElementById(
 
 
 // ==================================================
-// อัปเดต Stock อัตโนมัติ
+// AUTO REFRESH
 // ==================================================
 
 setInterval(() => {
 
     if (adminToken) {
 
-        loadProducts();
+        refreshAll();
 
     }
 
-}, 2000);
+}, 5000);
 
 </script>
 
-
 </body>
-
 </html>
-```
