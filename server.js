@@ -7,9 +7,9 @@ const app = express();
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// ==================================================
-// MYSQL
-// ==================================================
+// =========================
+// MySQL
+// =========================
 
 const db = mysql.createConnection({
   host: process.env.MYSQLHOST,
@@ -28,77 +28,43 @@ db.connect((err) => {
   console.log("MySQL Connected");
 });
 
-// ==================================================
-// USER TOKEN
-// ==================================================
+// =========================
+// USER LOGIN TOKEN
+// =========================
 
 const userTokens = new Map();
 
-// ==================================================
+// =========================
 // ADMIN
-// ==================================================
+// =========================
 
 const adminTokens = new Set();
+const ADMIN_PASSWORD = "1234";
 
-const ADMIN_PASSWORD =
-  process.env.ADMIN_PASSWORD || "1234";
-
-// ==================================================
-// ESP32
-// ==================================================
-
-let esp32LastHeartbeat = 0;
-
-const ESP32_TIMEOUT = 15000;
-
-// ==================================================
-// COMMAND QUEUE
-// ==================================================
+// =========================
+// ESP32 COMMAND QUEUE
+// =========================
 
 const commandQueue = [];
 
-// ==================================================
-// PENDING ORDERS
-// ==================================================
-
-const pendingOrders = new Map();
-
-// ==================================================
-// ESP32 ONLINE
-// ==================================================
-
-function isESP32Online() {
-  return (
-    esp32LastHeartbeat > 0 &&
-    Date.now() - esp32LastHeartbeat < ESP32_TIMEOUT
-  );
-}
-
-// ==================================================
+// =========================
 // USER AUTH
-// ==================================================
+// =========================
 
 function requireUser(req, res, next) {
-
-  const auth =
-    req.headers.authorization || "";
+  const auth = req.headers.authorization || "";
 
   if (!auth.startsWith("Bearer ")) {
-
     return res.status(401).json({
       success: false,
       message: "กรุณาเข้าสู่ระบบ"
     });
   }
 
-  const token =
-    auth.substring(7);
-
-  const username =
-    userTokens.get(token);
+  const token = auth.substring(7);
+  const username = userTokens.get(token);
 
   if (!username) {
-
     return res.status(401).json({
       success: false,
       message: "Session หมดอายุ กรุณาเข้าสู่ระบบใหม่"
@@ -110,20 +76,15 @@ function requireUser(req, res, next) {
   next();
 }
 
-// ==================================================
+// =========================
 // LOGIN
-// ==================================================
+// =========================
 
 app.post("/login", (req, res) => {
-
-  const username =
-    String(req.body.username || "").trim();
-
-  const password =
-    String(req.body.password || "");
+  const username = String(req.body.username || "").trim();
+  const password = String(req.body.password || "");
 
   if (!username || !password) {
-
     return res.status(400).json({
       success: false,
       message: "กรอก Username และ Password"
@@ -131,15 +92,10 @@ app.post("/login", (req, res) => {
   }
 
   db.query(
-    `SELECT id, username, password
-     FROM users
-     WHERE username = ?
-     LIMIT 1`,
+    "SELECT id, username, password FROM users WHERE username = ? LIMIT 1",
     [username],
     (err, rows) => {
-
       if (err) {
-
         console.error(err);
 
         return res.status(500).json({
@@ -149,7 +105,6 @@ app.post("/login", (req, res) => {
       }
 
       if (rows.length === 0) {
-
         return res.status(401).json({
           success: false,
           message: "ไม่พบ Username นี้"
@@ -157,24 +112,18 @@ app.post("/login", (req, res) => {
       }
 
       if (rows[0].password !== password) {
-
         return res.status(401).json({
           success: false,
           message: "Password ไม่ถูกต้อง"
         });
       }
 
+      // สร้าง Wallet ถ้ายังไม่มี
       db.query(
-        `INSERT INTO wallet
-         (username, balance)
-         VALUES (?, 0)
-         ON DUPLICATE KEY UPDATE
-         username = VALUES(username)`,
+        "INSERT INTO wallet (username, balance) VALUES (?, 0) ON DUPLICATE KEY UPDATE username = VALUES(username)",
         [username],
         (walletErr) => {
-
           if (walletErr) {
-
             console.error(walletErr);
 
             return res.status(500).json({
@@ -186,185 +135,54 @@ app.post("/login", (req, res) => {
           const token =
             crypto.randomBytes(32).toString("hex");
 
-          userTokens.set(
-            token,
-            username
-          );
+          userTokens.set(token, username);
 
           res.json({
             success: true,
-            token,
-            username
+            token: token,
+            username: username
           });
-
         }
       );
-
     }
   );
-
 });
 
-// ==================================================
-// REGISTER
-// ==================================================
-
-app.post("/register", (req, res) => {
-
-  const username =
-    String(req.body.username || "").trim();
-
-  const password =
-    String(req.body.password || "");
-
-  if (!username || !password) {
-
-    return res.json({
-      success: false,
-      message: "กรุณากรอก Username และ Password"
-    });
-  }
-
-  if (username.length < 3) {
-
-    return res.json({
-      success: false,
-      message: "Username ต้องมีอย่างน้อย 3 ตัว"
-    });
-  }
-
-  if (password.length < 4) {
-
-    return res.json({
-      success: false,
-      message: "Password ต้องมีอย่างน้อย 4 ตัว"
-    });
-  }
-
-  db.query(
-    `SELECT id
-     FROM users
-     WHERE username = ?
-     LIMIT 1`,
-    [username],
-    (err, rows) => {
-
-      if (err) {
-
-        console.error(err);
-
-        return res.status(500).json({
-          success: false,
-          message: "ตรวจสอบ Username ไม่สำเร็จ"
-        });
-      }
-
-      if (rows.length > 0) {
-
-        return res.json({
-          success: false,
-          message: "Username นี้มีคนใช้แล้ว"
-        });
-      }
-
-      db.query(
-        `INSERT INTO users
-         (username, password, wallet)
-         VALUES (?, ?, 0)`,
-        [username, password],
-        (err) => {
-
-          if (err) {
-
-            console.error(err);
-
-            return res.status(500).json({
-              success: false,
-              message: "สร้างบัญชีไม่สำเร็จ"
-            });
-          }
-
-          db.query(
-            `INSERT INTO wallet
-             (username, balance)
-             VALUES (?, 0)`,
-            [username],
-            (err) => {
-
-              if (err) {
-
-                db.query(
-                  `DELETE FROM users
-                   WHERE username = ?`,
-                  [username]
-                );
-
-                return res.status(500).json({
-                  success: false,
-                  message: "สร้าง Wallet ไม่สำเร็จ"
-                });
-              }
-
-              res.json({
-                success: true,
-                message: "สมัครสมาชิกสำเร็จ"
-              });
-
-            }
-          );
-
-        }
-      );
-
-    }
-  );
-
-});
-
-// ==================================================
+// =========================
 // LOGOUT
-// ==================================================
+// =========================
 
 app.post("/logout", requireUser, (req, res) => {
-
-  const auth =
-    req.headers.authorization || "";
-
-  const token =
-    auth.substring(7);
+  const auth = req.headers.authorization || "";
+  const token = auth.substring(7);
 
   userTokens.delete(token);
 
   res.json({
-    success: true
+    success: true,
+    message: "ออกจากระบบแล้ว"
   });
-
 });
 
-// ==================================================
+// =========================
 // CURRENT USER
-// ==================================================
+// =========================
 
 app.get("/me", requireUser, (req, res) => {
-
   res.json({
     success: true,
     username: req.username
   });
-
 });
 
-// ==================================================
+// =========================
 // ADMIN LOGIN
-// ==================================================
+// =========================
 
 app.post("/admin/login", (req, res) => {
-
-  const password =
-    String(req.body.password || "");
+  const password = String(req.body.password || "");
 
   if (password !== ADMIN_PASSWORD) {
-
     return res.status(401).json({
       success: false,
       message: "รหัสผ่าน Admin ผิด"
@@ -378,22 +196,18 @@ app.post("/admin/login", (req, res) => {
 
   res.json({
     success: true,
-    token
+    token: token
   });
-
 });
 
-// ==================================================
+// =========================
 // ADMIN AUTH
-// ==================================================
+// =========================
 
 function requireAdmin(req, res, next) {
-
-  const token =
-    req.headers["x-admin-token"];
+  const token = req.headers["x-admin-token"];
 
   if (!token || !adminTokens.has(token)) {
-
     return res.status(401).json({
       success: false,
       message: "ไม่ได้รับอนุญาต"
@@ -403,71 +217,29 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-// ==================================================
+// =========================
 // ADMIN LOGOUT
-// ==================================================
+// =========================
 
 app.post("/admin/logout", requireAdmin, (req, res) => {
-
-  const token =
-    req.headers["x-admin-token"];
+  const token = req.headers["x-admin-token"];
 
   adminTokens.delete(token);
 
   res.json({
     success: true
   });
-
 });
 
-// ==================================================
-// ESP32 HEARTBEAT
-// ==================================================
-
-app.post("/esp32/heartbeat", (req, res) => {
-
-  esp32LastHeartbeat =
-    Date.now();
-
-  res.json({
-    success: true,
-    online: true,
-    time: esp32LastHeartbeat
-  });
-
-});
-
-// ==================================================
-// ESP32 STATUS
-// ==================================================
-
-app.get("/esp32/status", (req, res) => {
-
-  const online =
-    isESP32Online();
-
-  res.json({
-    online,
-    lastHeartbeat:
-      esp32LastHeartbeat || null
-  });
-
-});
-
-// ==================================================
+// =========================
 // PRODUCTS
-// ==================================================
+// =========================
 
 app.get("/products", (req, res) => {
-
   db.query(
-    `SELECT id, name, price, stock
-     FROM products
-     ORDER BY id`,
+    "SELECT id, name, price, stock FROM products ORDER BY id",
     (err, rows) => {
-
       if (err) {
-
         console.error(err);
 
         return res.status(500).json({
@@ -477,645 +249,323 @@ app.get("/products", (req, res) => {
       }
 
       res.json(rows);
-
     }
   );
-
 });
 
-// ==================================================
+// =========================
 // BUY PRODUCT
-// ==================================================
+// =========================
 
 app.post("/buy/:id", requireUser, (req, res) => {
-
-  const productId =
-    Number(req.params.id);
-
-  const username =
-    req.username;
+  const productId = Number(req.params.id);
+  const username = req.username;
 
   if (!Number.isInteger(productId) || productId <= 0) {
-
     return res.status(400).json({
       success: false,
       message: "รหัสสินค้าไม่ถูกต้อง"
     });
   }
 
-  // ==================================================
-  // CHECK ESP32
-  // ==================================================
+  db.beginTransaction((err) => {
+    if (err) {
+      console.error("Transaction Error:", err);
 
-  if (!isESP32Online()) {
+      return res.status(500).json({
+        success: false,
+        message: "Transaction Error"
+      });
+    }
 
-    return res.status(503).json({
-      success: false,
-      message: "ตู้ Offline กรุณารอสักครู่"
-    });
-  }
+    // =========================
+    // ล็อกสินค้า
+    // =========================
 
-  db.query(
-    `SELECT
-       name,
-       price,
-       stock
-     FROM products
-     WHERE id = ?
-     LIMIT 1`,
-    [productId],
-    (err, products) => {
+    db.query(
+      "SELECT name, price, stock FROM products WHERE id = ? FOR UPDATE",
+      [productId],
+      (err, products) => {
 
-      if (err) {
+        if (err) {
+          console.error(err);
 
-        console.error(err);
-
-        return res.status(500).json({
-          success: false,
-          message: "Database Error"
-        });
-      }
-
-      if (products.length === 0) {
-
-        return res.status(404).json({
-          success: false,
-          message: "ไม่พบสินค้า"
-        });
-      }
-
-      const product =
-        products[0];
-
-      if (Number(product.stock) <= 0) {
-
-        return res.status(400).json({
-          success: false,
-          message: "สินค้าหมด"
-        });
-      }
-
-      db.query(
-        `SELECT balance
-         FROM wallet
-         WHERE username = ?
-         LIMIT 1`,
-        [username],
-        (err, wallets) => {
-
-          if (err) {
-
-            console.error(err);
-
-            return res.status(500).json({
+          return db.rollback(() => {
+            res.status(500).json({
               success: false,
               message: "Database Error"
             });
-          }
-
-          if (wallets.length === 0) {
-
-            return res.status(400).json({
-              success: false,
-              message: "ไม่พบ Wallet"
-            });
-          }
-
-          const balance =
-            Number(wallets[0].balance);
-
-          const price =
-            Number(product.price);
-
-          if (balance < price) {
-
-            return res.status(400).json({
-              success: false,
-              message: "เงินไม่พอ",
-              balance
-            });
-          }
-
-          // ==================================================
-          // CREATE ORDER
-          // ==================================================
-
-          const orderId =
-            "ORDER-" +
-            Date.now() +
-            "-" +
-            crypto
-              .randomBytes(4)
-              .toString("hex");
-
-          const order = {
-            orderId,
-            username,
-            productId,
-            productName: product.name,
-            price,
-            status: "PENDING",
-            createdAt: Date.now()
-          };
-
-          pendingOrders.set(
-            orderId,
-            order
-          );
-
-          // ==================================================
-          // SEND COMMAND TO ESP32
-          // ==================================================
-
-          commandQueue.push({
-            orderId,
-            productId
           });
-
-          console.log(
-            "ORDER CREATED:",
-            orderId,
-            "PRODUCT:",
-            productId,
-            "USER:",
-            username
-          );
-
-          // ==================================================
-          // ยังไม่หักเงิน
-          // ยังไม่ลด Stock
-          // ยังไม่บันทึกประวัติ
-          // ==================================================
-
-          res.json({
-            success: true,
-            pending: true,
-            message: "กำลังรอตู้จ่ายสินค้า",
-            orderId,
-            product: product.name,
-            price,
-            balance
-          });
-
         }
-      );
 
-    }
-  );
-
-});
-
-// ==================================================
-// ORDER STATUS
-// ==================================================
-
-app.get(
-  "/order/:orderId",
-  requireUser,
-  (req, res) => {
-
-    const orderId =
-      String(req.params.orderId || "");
-
-    const order =
-      pendingOrders.get(orderId);
-
-    if (!order) {
-
-      return res.status(404).json({
-        success: false,
-        message: "ไม่พบ Order"
-      });
-    }
-
-    if (order.username !== req.username) {
-
-      return res.status(403).json({
-        success: false,
-        message: "ไม่มีสิทธิ์ดู Order นี้"
-      });
-    }
-
-    res.json({
-      success: true,
-      orderId: order.orderId,
-      productId: order.productId,
-      product: order.productName,
-      price: order.price,
-      status: order.status
-    });
-
-  }
-);
-
-// ==================================================
-// ESP32 GET COMMAND
-// ==================================================
-
-app.get("/command", (req, res) => {
-
-  esp32LastHeartbeat =
-    Date.now();
-
-  const command =
-    commandQueue.shift();
-
-  if (!command) {
-
-    return res.json({
-      command: 0
-    });
-  }
-
-  console.log(
-    "ESP32 GET ORDER:",
-    command.orderId
-  );
-
-  res.json({
-    command: command.productId,
-    orderId: command.orderId
-  });
-
-});
-
-// ==================================================
-// ESP32 DISPENSE RESULT
-// ==================================================
-
-app.post("/dispense-result", (req, res) => {
-
-  const orderId =
-    String(req.body.orderId || "");
-
-  const success =
-    req.body.success === true;
-
-  if (!orderId) {
-
-    return res.status(400).json({
-      success: false,
-      message: "ไม่มี Order ID"
-    });
-  }
-
-  const order =
-    pendingOrders.get(orderId);
-
-  if (!order) {
-
-    return res.status(404).json({
-      success: false,
-      message: "ไม่พบ Order"
-    });
-  }
-
-  // ==================================================
-  // SUCCESS
-  // ==================================================
-
-  if (success) {
-
-    if (order.status === "SUCCESS") {
-
-      return res.json({
-        success: true,
-        message: "Order นี้สำเร็จไปแล้ว"
-      });
-    }
-
-    db.beginTransaction((err) => {
-
-      if (err) {
-
-        return res.status(500).json({
-          success: false,
-          message: "Transaction Error"
-        });
-      }
-
-      // ==================================================
-      // CHECK STOCK
-      // ==================================================
-
-      db.query(
-        `SELECT stock
-         FROM products
-         WHERE id = ?
-         FOR UPDATE`,
-        [order.productId],
-        (err, products) => {
-
-          if (err) {
-
-            return db.rollback(() => {
-
-              res.status(500).json({
-                success: false,
-                message: "Database Error"
-              });
-
+        if (products.length === 0) {
+          return db.rollback(() => {
+            res.status(404).json({
+              success: false,
+              message: "ไม่พบสินค้า"
             });
-          }
+          });
+        }
 
-          if (products.length === 0) {
+        const product = products[0];
 
-            return db.rollback(() => {
+        // =========================
+        // เช็ก Stock
+        // =========================
 
-              res.status(404).json({
-                success: false,
-                message: "ไม่พบสินค้า"
-              });
-
+        if (Number(product.stock) <= 0) {
+          return db.rollback(() => {
+            res.status(400).json({
+              success: false,
+              message: "สินค้าหมด"
             });
-          }
+          });
+        }
 
-          if (Number(products[0].stock) <= 0) {
+        // =========================
+        // ล็อก Wallet
+        // =========================
 
-            return db.rollback(() => {
+        db.query(
+          "SELECT balance FROM wallet WHERE username = ? FOR UPDATE",
+          [username],
+          (err, wallets) => {
 
-              res.status(400).json({
-                success: false,
-                message: "Stock หมด"
+            if (err) {
+              console.error(err);
+
+              return db.rollback(() => {
+                res.status(500).json({
+                  success: false,
+                  message: "Database Error"
+                });
               });
+            }
 
-            });
-          }
-
-          // ==================================================
-          // CHECK WALLET
-          // ==================================================
-
-          db.query(
-            `SELECT balance
-             FROM wallet
-             WHERE username = ?
-             FOR UPDATE`,
-            [order.username],
-            (err, wallets) => {
-
-              if (err) {
-
-                return db.rollback(() => {
-
-                  res.status(500).json({
-                    success: false,
-                    message: "Database Error"
-                  });
-
+            if (wallets.length === 0) {
+              return db.rollback(() => {
+                res.status(400).json({
+                  success: false,
+                  message: "ไม่พบ Wallet"
                 });
-              }
+              });
+            }
 
-              if (wallets.length === 0) {
+            const balance =
+              Number(wallets[0].balance);
 
-                return db.rollback(() => {
+            const price =
+              Number(product.price);
 
-                  res.status(400).json({
-                    success: false,
-                    message: "ไม่พบ Wallet"
-                  });
+            // =========================
+            // เช็กเงิน
+            // =========================
 
+            if (balance < price) {
+              return db.rollback(() => {
+                res.status(400).json({
+                  success: false,
+                  message: "เงินไม่พอ",
+                  balance: balance
                 });
-              }
+              });
+            }
 
-              const balance =
-                Number(wallets[0].balance);
+            const newBalance =
+              balance - price;
 
-              if (balance < order.price) {
+            // =========================
+            // หักเงิน Wallet
+            // =========================
 
-                return db.rollback(() => {
+            db.query(
+              "UPDATE wallet SET balance = ? WHERE username = ?",
+              [
+                newBalance,
+                username
+              ],
+              (err) => {
 
-                  res.status(400).json({
-                    success: false,
-                    message: "เงินใน Wallet ไม่พอ"
-                  });
+                if (err) {
+                  console.error(err);
 
-                });
-              }
-
-              // ==================================================
-              // หักเงิน
-              // ==================================================
-
-              db.query(
-                `UPDATE wallet
-                 SET balance = balance - ?
-                 WHERE username = ?`,
-                [
-                  order.price,
-                  order.username
-                ],
-                (err) => {
-
-                  if (err) {
-
-                    return db.rollback(() => {
-
-                      res.status(500).json({
-                        success: false,
-                        message: "หักเงินไม่สำเร็จ"
-                      });
-
+                  return db.rollback(() => {
+                    res.status(500).json({
+                      success: false,
+                      message: "หักเงินไม่สำเร็จ"
                     });
-                  }
+                  });
+                }
 
-                  // ==================================================
-                  // ลด Stock
-                  // ==================================================
+                // =========================
+                // ลด Stock
+                // =========================
 
-                  db.query(
-                    `UPDATE products
-                     SET stock = stock - 1
-                     WHERE id = ?
-                     AND stock > 0`,
-                    [order.productId],
-                    (err, result) => {
+                db.query(
+                  "UPDATE products SET stock = stock - 1 WHERE id = ?",
+                  [productId],
+                  (err) => {
 
-                      if (err) {
+                    if (err) {
+                      console.error(err);
 
-                        return db.rollback(() => {
-
-                          res.status(500).json({
-                            success: false,
-                            message:
-                              "ลด Stock ไม่สำเร็จ"
-                          });
-
+                      return db.rollback(() => {
+                        res.status(500).json({
+                          success: false,
+                          message: "ลด Stock ไม่สำเร็จ"
                         });
-                      }
+                      });
+                    }
 
-                      if (result.affectedRows === 0) {
+                    // =========================
+                    // บันทึกประวัติการซื้อ
+                    // =========================
 
-                        return db.rollback(() => {
+                    db.query(
+                      "INSERT INTO purchase_history (username, product_id, product_name, price) VALUES (?, ?, ?, ?)",
+                      [
+                        username,
+                        productId,
+                        product.name,
+                        price
+                      ],
+                      (err) => {
 
-                          res.status(400).json({
-                            success: false,
-                            message: "Stock หมด"
+                        if (err) {
+                          console.error(err);
+
+                          return db.rollback(() => {
+                            res.status(500).json({
+                              success: false,
+                              message:
+                                "บันทึกประวัติไม่สำเร็จ"
+                            });
                           });
+                        }
 
-                        });
-                      }
+                        // =========================
+                        // COMMIT
+                        // =========================
 
-                      // ==================================================
-                      // บันทึกประวัติ
-                      // ==================================================
-
-                      db.query(
-                        `INSERT INTO purchase_history
-                         (username, product_id, product_name, price)
-                         VALUES (?, ?, ?, ?)`,
-                        [
-                          order.username,
-                          order.productId,
-                          order.productName,
-                          order.price
-                        ],
-                        (err) => {
+                        db.commit((err) => {
 
                           if (err) {
+                            console.error(err);
 
                             return db.rollback(() => {
-
                               res.status(500).json({
                                 success: false,
-                                message:
-                                  "บันทึกประวัติไม่สำเร็จ"
+                                message: "Commit Error"
                               });
-
                             });
                           }
 
-                          // ==================================================
-                          // COMMIT
-                          // ==================================================
+                          // =========================
+                          // ส่งคำสั่งไป ESP32
+                          // =========================
 
-                          db.commit((err) => {
+                          commandQueue.push(productId);
 
-                            if (err) {
+                          console.log(
+                            "================================"
+                          );
 
-                              return db.rollback(() => {
+                          console.log(
+                            "BUY SUCCESS"
+                          );
 
-                                res.status(500).json({
-                                  success: false,
-                                  message:
-                                    "Commit Error"
-                                });
+                          console.log(
+                            "User:",
+                            username
+                          );
 
-                              });
-                            }
+                          console.log(
+                            "Product ID:",
+                            productId
+                          );
 
-                            order.status =
-                              "SUCCESS";
+                          console.log(
+                            "Product:",
+                            product.name
+                          );
 
-                            pendingOrders.set(
-                              orderId,
-                              order
-                            );
+                          console.log(
+                            "Price:",
+                            price
+                          );
 
-                            const newBalance =
-                              balance - order.price;
+                          console.log(
+                            "Old Balance:",
+                            balance
+                          );
 
-                            console.log(
-                              "DISPENSE SUCCESS:",
-                              orderId
-                            );
+                          console.log(
+                            "New Balance:",
+                            newBalance
+                          );
 
-                            setTimeout(() => {
+                          console.log(
+                            "ESP32 Command:",
+                            productId
+                          );
 
-                              pendingOrders.delete(
-                                orderId
-                              );
+                          console.log(
+                            "Stock decreased by 1"
+                          );
 
-                            }, 60000);
+                          console.log(
+                            "================================"
+                          );
 
-                            res.json({
-                              success: true,
-                              message:
-                                "จ่ายสินค้าและบันทึกสำเร็จ",
-                              orderId,
-                              status: "SUCCESS",
-                              balance:
-                                newBalance
-                            });
+                          // =========================
+                          // ส่งผลกลับเว็บ
+                          // =========================
 
+                          res.json({
+                            success: true,
+                            message: "ซื้อสำเร็จ",
+                            product: product.name,
+                            price: price,
+                            balance: newBalance
                           });
 
-                        }
-                      );
+                        });
 
-                    }
-                  );
+                      }
 
-                }
-              );
+                    );
 
-            }
-          );
+                  }
 
-        }
-      );
+                );
 
-    });
+              }
 
-    return;
-  }
+            );
 
-  // ==================================================
-  // FAILED
-  // ==================================================
+          }
 
-  console.log(
-    "DISPENSE FAILED:",
-    orderId
-  );
+        );
 
-  order.status =
-    "FAILED";
+      }
 
-  pendingOrders.set(
-    orderId,
-    order
-  );
-
-  // ไม่หักเงิน
-  // ไม่ลด Stock
-
-  setTimeout(() => {
-
-    pendingOrders.delete(
-      orderId
     );
 
-  }, 60000);
-
-  res.json({
-    success: true,
-    refunded: false,
-    amount: 0,
-    orderId,
-    status: "FAILED",
-    message:
-      "จ่ายสินค้าไม่สำเร็จ ไม่มีการหักเงิน"
   });
 
 });
 
-// ==================================================
+// =========================
 // WALLET
-// ==================================================
+// =========================
 
 app.get("/wallet", requireUser, (req, res) => {
-
   db.query(
-    `SELECT balance
-     FROM wallet
-     WHERE username = ?
-     LIMIT 1`,
+    "SELECT balance FROM wallet WHERE username = ? LIMIT 1",
     [req.username],
     (err, rows) => {
 
       if (err) {
-
         return res.status(500).json({
           success: false,
           message: "Database Error"
@@ -1123,7 +573,6 @@ app.get("/wallet", requireUser, (req, res) => {
       }
 
       if (rows.length === 0) {
-
         return res.status(404).json({
           success: false,
           message: "ไม่พบ Wallet"
@@ -1132,8 +581,56 @@ app.get("/wallet", requireUser, (req, res) => {
 
       res.json({
         username: req.username,
-        balance:
-          Number(rows[0].balance)
+        balance: Number(rows[0].balance)
+      });
+
+    }
+  );
+});
+
+// =========================
+// CREATE TOPUP
+// =========================
+
+app.post("/wallet/topup/create", requireUser, (req, res) => {
+
+  const amount = Number(req.body.amount);
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return res.status(400).json({
+      success: false,
+      message: "จำนวนเงินไม่ถูกต้อง"
+    });
+  }
+
+  const transactionId =
+    "TOPUP-" +
+    Date.now() +
+    "-" +
+    crypto.randomBytes(4).toString("hex");
+
+  db.query(
+    "INSERT INTO topup_transactions (transaction_id, username, amount, status) VALUES (?, ?, ?, 'PENDING')",
+    [
+      transactionId,
+      req.username,
+      amount
+    ],
+    (err) => {
+
+      if (err) {
+        console.error(err);
+
+        return res.status(500).json({
+          success: false,
+          message: "สร้างรายการเติมเงินไม่สำเร็จ"
+        });
+      }
+
+      res.json({
+        success: true,
+        transactionId: transactionId,
+        amount: amount
       });
 
     }
@@ -1141,74 +638,9 @@ app.get("/wallet", requireUser, (req, res) => {
 
 });
 
-// ==================================================
-// CREATE TOPUP
-// ==================================================
-
-app.post(
-  "/wallet/topup/create",
-  requireUser,
-  (req, res) => {
-
-    const amount =
-      Number(req.body.amount);
-
-    if (
-      !Number.isFinite(amount) ||
-      amount <= 0
-    ) {
-
-      return res.status(400).json({
-        success: false,
-        message: "จำนวนเงินไม่ถูกต้อง"
-      });
-    }
-
-    const transactionId =
-      "TOPUP-" +
-      Date.now() +
-      "-" +
-      crypto
-        .randomBytes(4)
-        .toString("hex");
-
-    db.query(
-      `INSERT INTO topup_transactions
-       (transaction_id, username, amount, status)
-       VALUES (?, ?, ?, 'PENDING')`,
-      [
-        transactionId,
-        req.username,
-        amount
-      ],
-      (err) => {
-
-        if (err) {
-
-          console.error(err);
-
-          return res.status(500).json({
-            success: false,
-            message:
-              "สร้างรายการเติมเงินไม่สำเร็จ"
-          });
-        }
-
-        res.json({
-          success: true,
-          transactionId,
-          amount
-        });
-
-      }
-    );
-
-  }
-);
-
-// ==================================================
+// =========================
 // SIMULATE PAYMENT
-// ==================================================
+// =========================
 
 app.post(
   "/wallet/topup/pay-simulate/:transactionId",
@@ -1221,7 +653,6 @@ app.post(
     db.beginTransaction((err) => {
 
       if (err) {
-
         return res.status(500).json({
           success: false,
           message: "Transaction Error"
@@ -1229,11 +660,7 @@ app.post(
       }
 
       db.query(
-        `SELECT amount, status
-         FROM topup_transactions
-         WHERE transaction_id = ?
-         AND username = ?
-         FOR UPDATE`,
+        "SELECT amount, status FROM topup_transactions WHERE transaction_id = ? AND username = ? FOR UPDATE",
         [
           transactionId,
           req.username
@@ -1241,55 +668,43 @@ app.post(
         (err, rows) => {
 
           if (err) {
-
             return db.rollback(() => {
-
               res.status(500).json({
                 success: false,
                 message: "Database Error"
               });
-
             });
           }
 
           if (rows.length === 0) {
-
             return db.rollback(() => {
-
               res.status(404).json({
                 success: false,
-                message:
-                  "ไม่พบรายการเติมเงิน"
+                message: "ไม่พบรายการเติมเงิน"
               });
-
             });
           }
 
-          const transaction =
-            rows[0];
+          const transaction = rows[0];
 
-          if (
-            transaction.status === "SUCCESS"
-          ) {
-
+          if (transaction.status === "SUCCESS") {
             return db.rollback(() => {
-
               res.status(400).json({
                 success: false,
-                message:
-                  "รายการนี้ชำระแล้ว"
+                message: "รายการนี้ชำระแล้ว"
               });
-
             });
           }
 
           const amount =
             Number(transaction.amount);
 
+          // =========================
+          // เพิ่มเงิน
+          // =========================
+
           db.query(
-            `UPDATE wallet
-             SET balance = balance + ?
-             WHERE username = ?`,
+            "UPDATE wallet SET balance = balance + ? WHERE username = ?",
             [
               amount,
               req.username
@@ -1297,23 +712,20 @@ app.post(
             (err) => {
 
               if (err) {
-
                 return db.rollback(() => {
-
                   res.status(500).json({
                     success: false,
-                    message:
-                      "เพิ่มเงินไม่สำเร็จ"
+                    message: "เพิ่มเงินไม่สำเร็จ"
                   });
-
                 });
               }
 
+              // =========================
+              // เปลี่ยนสถานะ
+              // =========================
+
               db.query(
-                `UPDATE topup_transactions
-                 SET status = 'SUCCESS'
-                 WHERE transaction_id = ?
-                 AND username = ?`,
+                "UPDATE topup_transactions SET status = 'SUCCESS' WHERE transaction_id = ? AND username = ?",
                 [
                   transactionId,
                   req.username
@@ -1321,38 +733,36 @@ app.post(
                 (err) => {
 
                   if (err) {
-
                     return db.rollback(() => {
-
                       res.status(500).json({
                         success: false,
                         message:
                           "อัปเดตสถานะไม่สำเร็จ"
                       });
-
                     });
                   }
+
+                  // =========================
+                  // COMMIT
+                  // =========================
 
                   db.commit((err) => {
 
                     if (err) {
-
                       return db.rollback(() => {
-
                         res.status(500).json({
                           success: false,
-                          message:
-                            "Commit Error"
+                          message: "Commit Error"
                         });
-
                       });
                     }
 
+                    // =========================
+                    // อ่านยอดใหม่
+                    // =========================
+
                     db.query(
-                      `SELECT balance
-                       FROM wallet
-                       WHERE username = ?
-                       LIMIT 1`,
+                      "SELECT balance FROM wallet WHERE username = ? LIMIT 1",
                       [req.username],
                       (err, walletRows) => {
 
@@ -1360,7 +770,6 @@ app.post(
                           err ||
                           walletRows.length === 0
                         ) {
-
                           return res.status(500).json({
                             success: false,
                             message:
@@ -1370,11 +779,10 @@ app.post(
 
                         res.json({
                           success: true,
-                          amount,
-                          balance:
-                            Number(
-                              walletRows[0].balance
-                            )
+                          amount: amount,
+                          balance: Number(
+                            walletRows[0].balance
+                          )
                         });
 
                       }
@@ -1399,9 +807,9 @@ app.post(
   }
 );
 
-// ==================================================
+// =========================
 // TOPUP HISTORY
-// ==================================================
+// =========================
 
 app.get(
   "/wallet/topup/history",
@@ -1409,19 +817,11 @@ app.get(
   (req, res) => {
 
     db.query(
-      `SELECT
-         transaction_id,
-         amount,
-         status,
-         created_at
-       FROM topup_transactions
-       WHERE username = ?
-       ORDER BY created_at DESC`,
+      "SELECT transaction_id, amount, status, created_at FROM topup_transactions WHERE username = ? ORDER BY created_at DESC",
       [req.username],
       (err, rows) => {
 
         if (err) {
-
           return res.status(500).json({
             success: false,
             message: "Database Error"
@@ -1436,9 +836,9 @@ app.get(
   }
 );
 
-// ==================================================
+// =========================
 // PURCHASE HISTORY
-// ==================================================
+// =========================
 
 app.get(
   "/purchase/history",
@@ -1446,15 +846,11 @@ app.get(
   (req, res) => {
 
     db.query(
-      `SELECT *
-       FROM purchase_history
-       WHERE username = ?
-       ORDER BY created_at DESC`,
+      "SELECT * FROM purchase_history WHERE username = ? ORDER BY created_at DESC",
       [req.username],
       (err, rows) => {
 
         if (err) {
-
           return res.status(500).json({
             success: false,
             message: "Database Error"
@@ -1469,9 +865,9 @@ app.get(
   }
 );
 
-// ==================================================
+// =========================
 // ADD STOCK
-// ==================================================
+// =========================
 
 app.post(
   "/stock/:id/add",
@@ -1488,7 +884,6 @@ app.post(
       !Number.isInteger(amount) ||
       amount <= 0
     ) {
-
       return res.status(400).json({
         success: false,
         message: "จำนวนไม่ถูกต้อง"
@@ -1496,9 +891,7 @@ app.post(
     }
 
     db.query(
-      `UPDATE products
-       SET stock = stock + ?
-       WHERE id = ?`,
+      "UPDATE products SET stock = stock + ? WHERE id = ?",
       [
         amount,
         productId
@@ -1506,7 +899,6 @@ app.post(
       (err, result) => {
 
         if (err) {
-
           return res.status(500).json({
             success: false,
             message: "Database Error"
@@ -1514,7 +906,6 @@ app.post(
         }
 
         if (result.affectedRows === 0) {
-
           return res.status(404).json({
             success: false,
             message: "ไม่พบสินค้า"
@@ -1532,341 +923,37 @@ app.post(
   }
 );
 
-// ==================================================
-// ADMIN ADD NEW PRODUCT
-// ==================================================
+// =========================
+// ESP32 COMMAND
+// =========================
 
-app.post(
-  "/admin/product/add",
-  requireAdmin,
-  (req, res) => {
+app.get("/command", (req, res) => {
 
-    const name =
-      String(req.body.name || "").trim();
+  const command =
+    commandQueue.shift() || 0;
 
-    const price =
-      Number(req.body.price);
-
-    const stock =
-      Number(req.body.stock);
-
-    if (!name) {
-      return res.status(400).json({
-        success: false,
-        message: "กรุณาใส่ชื่อสินค้า"
-      });
-    }
-
-    if (
-      !Number.isFinite(price) ||
-      price < 0
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "ราคาไม่ถูกต้อง"
-      });
-    }
-
-    if (
-      !Number.isInteger(stock) ||
-      stock < 0
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Stock ไม่ถูกต้อง"
-      });
-    }
-
-    db.query(
-      `INSERT INTO products
-       (name, price, stock)
-       VALUES (?, ?, ?)`,
-      [
-        name,
-        price,
-        stock
-      ],
-      (err, result) => {
-
-        if (err) {
-
-          console.error(err);
-
-          return res.status(500).json({
-            success: false,
-            message: "เพิ่มสินค้าไม่สำเร็จ"
-          });
-        }
-
-        res.json({
-          success: true,
-          message: "เพิ่มสินค้าเรียบร้อย",
-          productId: result.insertId
-        });
-
-      }
-    );
-
-  }
-);
-
-// ==================================================
-// ADMIN PRODUCTS - PRICE
-// ==================================================
-
-app.post(
-  "/admin/product/:id/price",
-  requireAdmin,
-  (req, res) => {
-
-    const productId =
-      Number(req.params.id);
-
-    const price =
-      Number(req.body.price);
-
-    if (
-      !Number.isFinite(price) ||
-      price < 0
-    ) {
-
-      return res.status(400).json({
-        success: false,
-        message: "ราคาไม่ถูกต้อง"
-      });
-    }
-
-    db.query(
-      `UPDATE products
-       SET price = ?
-       WHERE id = ?`,
-      [
-        price,
-        productId
-      ],
-      (err, result) => {
-
-        if (err) {
-
-          return res.status(500).json({
-            success: false,
-            message: "Database Error"
-          });
-        }
-
-        if (result.affectedRows === 0) {
-
-          return res.status(404).json({
-            success: false,
-            message: "ไม่พบสินค้า"
-          });
-        }
-
-        res.json({
-          success: true,
-          message: "เปลี่ยนราคาแล้ว"
-        });
-
-      }
-    );
-
-  }
-);
-
-// ==================================================
-// ADMIN STOCK REMOVE
-// ==================================================
-
-app.post(
-  "/admin/product/:id/remove-stock",
-  requireAdmin,
-  (req, res) => {
-
-    const productId =
-      Number(req.params.id);
-
-    const amount =
-      Number(req.body.amount);
-
-    if (
-      !Number.isInteger(amount) ||
-      amount <= 0
-    ) {
-
-      return res.status(400).json({
-        success: false,
-        message: "จำนวนไม่ถูกต้อง"
-      });
-    }
-
-    db.query(
-      `UPDATE products
-       SET stock =
-         CASE
-           WHEN stock >= ? THEN stock - ?
-           ELSE 0
-         END
-       WHERE id = ?`,
-      [
-        amount,
-        amount,
-        productId
-      ],
-      (err, result) => {
-
-        if (err) {
-
-          return res.status(500).json({
-            success: false,
-            message: "Database Error"
-          });
-        }
-
-        if (result.affectedRows === 0) {
-
-          return res.status(404).json({
-            success: false,
-            message: "ไม่พบสินค้า"
-          });
-        }
-
-        res.json({
-          success: true,
-          message: "ลด Stock แล้ว"
-        });
-
-      }
-    );
-
-  }
-);
-
-// ==================================================
-// ADMIN SALES
-// ==================================================
-
-app.get(
-  "/admin/sales",
-  requireAdmin,
-  (req, res) => {
-
-    db.query(
-      `SELECT
-         COUNT(*) AS total_orders,
-         COALESCE(SUM(price), 0) AS total_sales
-       FROM purchase_history`,
-      (err, rows) => {
-
-        if (err) {
-
-          return res.status(500).json({
-            success: false,
-            message: "Database Error"
-          });
-        }
-
-        res.json({
-          success: true,
-          totalOrders:
-            Number(rows[0].total_orders),
-          totalSales:
-            Number(rows[0].total_sales)
-        });
-
-      }
-    );
-
-  }
-);
-
-// ==================================================
-// ADMIN PURCHASE HISTORY
-// ==================================================
-
-app.get(
-  "/admin/purchases",
-  requireAdmin,
-  (req, res) => {
-
-    db.query(
-      `SELECT *
-       FROM purchase_history
-       ORDER BY created_at DESC`,
-      (err, rows) => {
-
-        if (err) {
-
-          console.error(err);
-
-          return res.status(500).json({
-            success: false,
-            message: "Database Error"
-          });
-        }
-
-        // สำคัญ:
-        // admin.html ของเรารับเป็น Array
-        res.json(rows);
-
-      }
-    );
-
-  }
-);
-
-// ==================================================
-// ADMIN USERS
-// ==================================================
-
-app.get(
-  "/admin/users",
-  requireAdmin,
-  (req, res) => {
-
-    db.query(
-      `SELECT
-         u.id,
-         u.username,
-         COALESCE(w.balance, 0) AS balance
-       FROM users u
-       LEFT JOIN wallet w
-         ON u.username = w.username
-       ORDER BY u.id DESC`,
-      (err, rows) => {
-
-        if (err) {
-
-          console.error(err);
-
-          return res.status(500).json({
-            success: false,
-            message: "Database Error"
-          });
-        }
-
-        res.json(rows);
-
-      }
-    );
-
-  }
-);
-
-// ==================================================
-// HOME
-// ==================================================
-
-app.get("/", (req, res) => {
-
-  res.sendFile(
-    __dirname + "/login.html"
+  console.log(
+    "ESP32 Command Sent:",
+    command
   );
+
+  res.json({
+    command: command
+  });
 
 });
 
-// ==================================================
+// =========================
+// HOME
+// =========================
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/login.html");
+});
+
+// =========================
 // SERVER
-// ==================================================
+// =========================
 
 app.listen(
   process.env.PORT || 3000,
@@ -1886,7 +973,16 @@ app.listen(
     );
 
     console.log(
-      "ระบบหลายผู้ใช้ + ESP32 Online"
+      "Server Port:",
+      process.env.PORT || 3000
+    );
+
+    console.log(
+      "Admin Password: 1234"
+    );
+
+    console.log(
+      "ระบบหลายผู้ใช้พร้อมใช้งาน"
     );
 
   }
