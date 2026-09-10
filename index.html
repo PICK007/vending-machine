@@ -968,6 +968,7 @@ function buyProduct(id) {
         );
 
         return;
+
     }
 
     buyingProduct = true;
@@ -977,18 +978,19 @@ function buyProduct(id) {
         .forEach(button => {
 
             button.disabled = true;
-
             button.innerText =
                 "กำลังจ่ายสินค้า...";
 
         });
 
-
     fetch(
         "/buy/" + id,
         {
+
             method: "POST",
+
             headers: authHeaders()
+
         }
     )
 
@@ -1008,6 +1010,7 @@ function buyProduct(id) {
                 "/login.html";
 
             return null;
+
         }
 
         return response.json();
@@ -1018,15 +1021,13 @@ function buyProduct(id) {
 
         if (!data) return;
 
-
-        // =====================================
-        // ซื้อสำเร็จ
-        // =====================================
-
-        if (data.success) {
+        if (
+            data.success &&
+            data.orderId
+        ) {
 
             alert(
-                "ซื้อสินค้าสำเร็จ! ✅\n\n" +
+                "กำลังจ่ายสินค้า...\n\n" +
                 "สินค้า: " +
                 (data.product || "") +
                 "\nราคา: " +
@@ -1034,22 +1035,11 @@ function buyProduct(id) {
                 " บาท"
             );
 
-
-            // ปลดล็อกปุ่ม
-            buyingProduct = false;
-
-
-            // โหลดข้อมูลใหม่ทันที
-            loadProducts();
-            loadWallet();
-            loadPurchaseHistory();
+            waitForOrder(
+                data.orderId
+            );
 
         }
-
-
-        // =====================================
-        // ซื้อไม่สำเร็จ
-        // =====================================
 
         else {
 
@@ -1069,10 +1059,7 @@ function buyProduct(id) {
 
     .catch(error => {
 
-        console.error(
-            "Buy Error:",
-            error
-        );
+        console.log(error);
 
         alert(
             "ไม่สามารถเชื่อมต่อ Server ได้"
@@ -1081,7 +1068,6 @@ function buyProduct(id) {
         buyingProduct = false;
 
         loadProducts();
-        loadWallet();
 
     });
 
@@ -1092,7 +1078,146 @@ function buyProduct(id) {
 // รอผล Order
 // =========================
 
+function waitForOrder(orderId) {
 
+    let attempts = 0;
+
+    const maxAttempts = 40;
+
+    const checkOrder =
+        setInterval(() => {
+
+            attempts++;
+
+            fetch(
+                "/order/" + orderId,
+                {
+                    headers:
+                        authHeaders()
+                }
+            )
+
+            .then(response => {
+
+                if (
+                    response.status === 401
+                ) {
+
+                    clearInterval(
+                        checkOrder
+                    );
+
+                    localStorage.removeItem(
+                        "vendingToken"
+                    );
+
+                    localStorage.removeItem(
+                        "vendingUsername"
+                    );
+
+                    window.location.href =
+                        "/login.html";
+
+                    return null;
+
+                }
+
+                return response.json();
+
+            })
+
+            .then(data => {
+
+                if (!data) return;
+
+                console.log(
+                    "Order Status:",
+                    data.status
+                );
+
+                if (
+                    data.status ===
+                    "SUCCESS"
+                ) {
+
+                    clearInterval(
+                        checkOrder
+                    );
+
+                    alert(
+                        "จ่ายสินค้าสำเร็จ! ✅\n\n" +
+                        "สินค้า: " +
+                        data.product +
+                        "\nราคา: " +
+                        data.price +
+                        " บาท"
+                    );
+
+                    buyingProduct = false;
+
+                    loadProducts();
+                    loadWallet();
+                    loadPurchaseHistory();
+
+                }
+
+                else if (
+                    data.status ===
+                    "FAILED"
+                ) {
+
+                    clearInterval(
+                        checkOrder
+                    );
+
+                    alert(
+                        "จ่ายสินค้าไม่สำเร็จ ❌\n\n" +
+                        "ไม่มีการหักเงิน"
+                    );
+
+                    buyingProduct = false;
+
+                    loadProducts();
+                    loadWallet();
+                    loadPurchaseHistory();
+
+                }
+
+            })
+
+            .catch(error => {
+
+                console.log(
+                    "ตรวจสอบ Order Error:",
+                    error
+                );
+
+            });
+
+            if (
+                attempts >=
+                maxAttempts
+            ) {
+
+                clearInterval(
+                    checkOrder
+                );
+
+                alert(
+                    "ยังไม่ได้รับผลจากตู้\n\n" +
+                    "กรุณาตรวจสอบตู้หรือ ESP32"
+                );
+
+                buyingProduct = false;
+
+                loadProducts();
+                loadWallet();
+
+            }
+
+        }, 1000);
+
+}
 
 
 // =========================
